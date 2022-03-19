@@ -1,0 +1,9 @@
+[submodule "Reference_Repositories/HoloLens2ForCV"]
+	path = Reference_Repositories/HoloLens2ForCV
+	url = https://github.com/microsoft/HoloLens2ForCV.git
+[submodule "Reference_Repositories/HoloLens2-ResearchMode-Unity"]
+	path = Reference_Repositories/HoloLens2-ResearchMode-Unity
+	url = https://github.com/petergu684/HoloLens2-ResearchMode-Unity.git
+[submodule "Reference_Repositories/HoloLensWithDlibFaceLandmarkDetectorExample"]
+	path = Reference_Repositories/HoloLensWithDlibFaceLandmarkDetectorExample
+	url = https://github.com/EnoxSoftware/HoloLensWithDlibFaceLandmarkDetectorExample.git
