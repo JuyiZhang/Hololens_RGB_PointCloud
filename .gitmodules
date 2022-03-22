@@ -10,3 +10,6 @@
 [submodule "Reference_Repositories/HoloLensResearchmodeDemo"]
 	path = Reference_Repositories/HoloLensResearchmodeDemo
 	url = https://github.com/akihiro0105/HoloLensResearchmodeDemo.git
+[submodule "Reference_Repositories/HoloLensResearchmodeDemoWithUnity"]
+	path = Reference_Repositories/HoloLensResearchmodeDemoWithUnity
+	url = https://github.com/akihiro0105/HoloLensResearchmodeDemoWithUnity.git
