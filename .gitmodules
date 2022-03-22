@@ -7,3 +7,6 @@
 [submodule "Reference_Repositories/HoloLensWithDlibFaceLandmarkDetectorExample"]
 	path = Reference_Repositories/HoloLensWithDlibFaceLandmarkDetectorExample
 	url = https://github.com/EnoxSoftware/HoloLensWithDlibFaceLandmarkDetectorExample.git
+[submodule "Reference_Repositories/HoloLensResearchmodeDemo"]
+	path = Reference_Repositories/HoloLensResearchmodeDemo
+	url = https://github.com/akihiro0105/HoloLensResearchmodeDemo.git
