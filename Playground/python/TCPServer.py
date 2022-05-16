@@ -2,8 +2,10 @@ import socket
 import struct
 import sys
 import os
+import io
 import numpy as np
 import cv2
+import PIL.Image as imgp
 import time
 #import open3d as o3d
 import pickle as pkl
@@ -75,11 +77,12 @@ def tcp_server():
             if header == 'p':
                 # save point cloud
                 # print(data)
-                N_pointcloud = struct.unpack(">q", data[1:9])[0]
+                timestamp = struct.unpack(">q", data[1:9])[0]
+                N_pointcloud = struct.unpack(">q", data[9:17])[0]
                 print("Length of point cloud:" + str(N_pointcloud))
-                pointcloud_np = np.frombuffer(data[9:9+N_pointcloud*4], np.float32).reshape((-1,3))
-                timestamp = str(int(time.time()))
-                filename = timestamp + "_pc.ndarray"
+                pointcloud_np = np.frombuffer(data[17:17+N_pointcloud*4], np.float32).reshape((-1,3))
+                rectimestamp = str(int(time.time()))
+                filename = rectimestamp + "_pc.ndarray"
                 np.save(filename, pointcloud_np, allow_pickle=True, fix_imports=True)
 
                 #Reconstruction data, remove comment in the future
@@ -89,6 +92,18 @@ def tcp_server():
                 #o3d_pc.points = o3d.utility.Vector3dVector(pointcloud_np.astype(np.float64))
                 #o3d.io.write_point_cloud(save_folder + temp_filename_pc, o3d_pc, write_ascii=True)
                 #print('Saved  image to ' + temp_filename_pc)"""
+            if header == 'i':
+                # save point cloud
+                # print(data)
+                timestamp = struct.unpack(">q", data[1:9])[0]
+                N_pointcloud = struct.unpack(">q", data[9:17])[0]
+                print("Length of RGB Image:" + str(N_pointcloud))
+                #pointcloud_np = np.frombuffer(data[17:17+N_pointcloud*4], np.float32).reshape((-1,3))
+                rectimestamp = str(int(time.time()))
+                filename = rectimestamp + "_rgb"
+                imagereconstruct = imgp.open(io.BytesIO(data[17:17+N_pointcloud*4]))
+                imagereconstruct.save(filename)
+                #np.save(filename, pointcloud_np, allow_pickle=True, fix_imports=True)
 
         except:
             break
