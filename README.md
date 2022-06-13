@@ -15,6 +15,10 @@ Holoregi is the abbreviated version of Hololens Registration, which utilizes the
 - Additional Package: MRTK 2.8.0, OpenXR 1.3
 ## How to Run
 ### Server Side
+Reconstruct RGB point clouds from ImageCapture and PointCloudCapture folders by following the instruction from HoloLens2ForCV: https://github.com/microsoft/HoloLens2ForCV/tree/main/Samples/StreamRecorder
+Then process those point clouds described in the `python` folder. With the provided MRI point cloud file, run <br>
+`python main.py` <br>
+to get the transformed MRI point cloud and combined hologram from the Hololens frames registerd with it.
 ### Client Side
 #### Compiling and Modifying
 Open the Project in Unity. The build setting should already been up <br>
