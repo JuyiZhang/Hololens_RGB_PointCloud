@@ -19,6 +19,9 @@ Reconstruct RGB point clouds from ImageCapture and PointCloudCapture folders by 
 Then process those point clouds described in the `python` folder. With the provided MRI point cloud file, run <br>
 `python main.py` <br>
 to get the transformed MRI point cloud and combined hologram from the Hololens frames registerd with it.
+#### Run The TCP Server
+Simply head to the directory in terminal, type `python3 TCPServer.py` the code will be up and running
+However, in the code there are some settings that you will need to take a look at. Please head to the readme in that folder for more information
 ### Client Side
 #### Compiling and Modifying
 Open the Project in Unity. The build setting should already been up <br>
