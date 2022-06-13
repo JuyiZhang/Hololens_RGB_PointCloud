@@ -1,4 +1,15 @@
-# HoloLens2-ResearchMode-Unity
+# HoloLens2-ResearchMode-Unity-RGB Version
+This plugin is modified based on the Hololens2-ResearchMode-Unity Repository (Please see the reference repository or the link [Hololens2-ResearchMode-Unity](https://github.com/petergu684/HoloLens2-ResearchMode-Unity)
+
+## Main Modification:
+Added Video Frame Processor from [Hololens2ForCV](https://github.com/microsoft/HoloLens2ForCV) <br>
+The original Video Frame Processor is created to write the data onto Hololens' disk. However, since we want it to be imported to Unity, I have adapted it to write video frame buffer to the `HL2ResearchMode` Class <br>
+Modified `HL2ResearchMode.cpp`/`HL2ResearchMode.h` to reflect the data retrieval from Video Frame Processor
+## Bugs
+- At version 1432. There is memory leakage when accessing PV camera and the Short Throw Sensor at the same time. So don't be surprised if it crashed
+- At version 1501. It will not work because microsoft "Fixed a bug that causes the leakage when accessing the PV Camera and Depth Sensor at the same time"  (Thanks, Microsoft)
+
+## Original Content from Peter Gu
 Unity Plugin for using research mode functionality in HoloLens 2. Modified based on [HoloLens2ForCV](https://github.com/microsoft/HoloLens2ForCV).
 
 ![Depth Map Example](https://github.com/petergu684/HoloLens2-ResearchMode-Unity/blob/master/DepthMapExample.jpg)
