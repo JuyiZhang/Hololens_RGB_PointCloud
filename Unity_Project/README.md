@@ -1,5 +1,5 @@
 ---
-page_type: sample
+page_type: Project
 name: Holoregi Project
 description: HoloLens 2 Research Mode project showcasing RGBD access and visualization
 languages:
