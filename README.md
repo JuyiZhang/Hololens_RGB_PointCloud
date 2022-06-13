@@ -5,19 +5,19 @@ This is a repository created for the Computer Vision Project of "Patient Registr
 Holoregi is the abbreviated version of Hololens Registration, which utilizes the Hololens 2 research mode to obtain spatial information. The spatial information is then send to an computer and perform registration, which generates a transformation matrix and the transformation matrix will be sent back to Hololens and display the MRI scan at the transformed location
 ## Environment
 ### Server Side
-Operating System: macOS (Arm/x64), Linux (Arm/x64), Windows (x64)
-Python: 3.9 and below
-Package: Open3D 0.15.1, Scipy 1.8.0, Sklearn 1.0.2, Numpy 1.22.4
+- Operating System: macOS (Arm/x64), Linux (Arm/x64), Windows (x64)
+- Python: 3.9 and below
+- Package: Open3D 0.15.1, Scipy 1.8.0, Sklearn 1.0.2, Numpy 1.22.4
 ### Client Side
-Operating System (Compile): Windows (x64)
-Operating System (Hololens): Windows, build number 20348.1432 (Note that current version 22H2 (build number 20348.1501 is **NOT COMPATIBLE** due to microsoft introducing some bugs for accessing AHAT sensor and the PV camera at the same time)
-Unity: 2020.3.30f1
-Additional Package: MRTK 2.8.0
+- Operating System (Compile): Windows (x64)
+- Operating System (Hololens): Windows, build number 20348.1432 (Note that current version 22H2 (build number 20348.1501 is **NOT COMPATIBLE** due to microsoft introducing some bugs for accessing AHAT sensor and the PV camera at the same time)
+- Unity: 2020.3.30f1
+- Additional Package: MRTK 2.8.0, OpenXR 1.3
 ## How to Run
 ### Server Side
 ### Client Side
 #### Compiling and Modifying
-Open the Project in Unity. The build setting should already been up \n
-The build setting is already setup, after successful build, please copy the package.appxmanifest in root directory to `App/HL2ResearchModeUnitySample`\n
-For more info, please refer to the Unity Folder of Holoregi
+Open the Project in Unity. The build setting should already been up <br>
+The build setting is already setup, after successful build, please copy the package.appxmanifest in root directory to `App/HL2ResearchModeUnitySample` <br>
+For more info, please refer to the Unity Folder of Holoregi <br>
 
