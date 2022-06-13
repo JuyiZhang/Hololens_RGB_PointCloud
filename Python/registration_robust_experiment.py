@@ -81,7 +81,7 @@ def main():
     # the given MRI data is a .stl file
     # we need to convert it to a point cloud, namely a .pcd file
     reference_stl_file = './data/BTI_DemoHead/skin/Segmentation_Skin.stl'
-    # stl_to_pcd(reference_stl_file)
+    stl_to_pcd(reference_stl_file)
     reference_pcd_file = reference_stl_file.replace('.stl', '.pcd')
     reference_point_cloud=o3d.io.read_point_cloud(reference_pcd_file)
 

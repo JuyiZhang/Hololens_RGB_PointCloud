@@ -53,23 +53,24 @@ def main():
 
     # list of files to be denoised
 
-    # xyz_list=['./data/1648994086_pc_front.ndarray.npy',
-    #           './data/1648994242_pc_right.ndarray.npy',
-    #           './data/1648994346_pc_rightback34.ndarray.npy',
-    #           './data/pcd/1652898244971_pc.ndarray.npy',
-    #           './data/pcd/1652898245148_pc.ndarray.npy']
-    xyz_list=[os.path.join('./data/PointCloudCapture',f)
-              for f in os.listdir('./data/PointCloudCapture') if os.path.isfile(os.path.join(
-        './data/PointCloudCapture',f
-    ))]
+    xyz_list=['./data/denoising.npy',
+              # './data/1648994242_pc_right.ndarray.npy',
+              # './data/1648994346_pc_rightback34.ndarray.npy',
+              # './data/pcd/1652898244971_pc.ndarray.npy',
+              # './data/pcd/1652898245148_pc.ndarray.npy'
+              ]
+    # xyz_list=[os.path.join('./data/PointCloudCapture',f)
+    #           for f in os.listdir('./data/PointCloudCapture') if os.path.isfile(os.path.join(
+    #     './data/PointCloudCapture',f
+    # ))]
 
     # denoise each point cloud
     # then save as a ply file
     for i,file in enumerate(xyz_list):
         print(f'{i}/{len(xyz_list)}')
         xyz=np.load(file)
-        # visualize(xyz,
-        #           file_path=file.replace('PointCloudCapture', 'PointCloudCapture_denoised').replace('npy', 'ply'))
+        visualize(xyz,
+                  file_path=file.replace('PointCloudCapture', 'PointCloudCapture_denoised').replace('npy', 'ply'))
         if xyz.shape[0]<1:
             continue
         # visualize(xyz,file_path=file.replace('pcd','pcd_denoise').replace('npy','ply'))
