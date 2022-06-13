@@ -1,4 +1,5 @@
 ﻿# Holoregi
+![alt text](Holoregilogo.png "Logo")
 ## Welcome to the Holoregi Repository
 This is a repository created for the Computer Vision Project of "Patient Registration in Hololens 2" Sponsored by Augmedit
 ## What is Holoregi
