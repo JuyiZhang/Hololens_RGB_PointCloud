@@ -98,7 +98,7 @@ def tcp_server():
                 print("Saving RGB Image")
                 timestamp = struct.unpack(">q", data[1:9])[0]
                 N_image = struct.unpack(">q", data[9:17])[0]
-                print("Length of point cloud:" + str(N_image))
+                print("Length of image:" + str(N_image))
                 #image_np = np.frombuffer(data[17:17+N_image*4], np.uint8).reshape((-1,3))
                 timestamp = str(int(time.time()*1000))
                 filename = "ImageCapture/" + timestamp + "_pc.imgdata"
