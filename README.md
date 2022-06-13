@@ -17,6 +17,7 @@ Additional Package: MRTK 2.8.0
 ### Server Side
 ### Client Side
 #### Compiling and Modifying
-Open the Project in Unity. The build setting should already been up
-The build setting is already setup, after successful build, please copy the package.appxmanifest in root directory to App/HL2ResearchModeUnitySample
+Open the Project in Unity. The build setting should already been up \n
+The build setting is already setup, after successful build, please copy the package.appxmanifest in root directory to `App/HL2ResearchModeUnitySample`\n
+For more info, please refer to the Unity Folder of Holoregi
 
