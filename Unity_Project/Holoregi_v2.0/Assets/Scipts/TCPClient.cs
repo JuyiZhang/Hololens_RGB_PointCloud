@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using UnityEngine;
 //using System.Runtime.Serialization.Formatters.Binary;
 #if WINDOWS_UWP
@@ -73,6 +74,29 @@ public class TCPClient : MonoBehaviour
 
         socket?.Dispose();
         connected = false;
+    }
+
+        // This is the part I wrote to send the point cloud
+    // The timestamp will be used to match the point cloud data with the rgb data
+    public async void SendPointCloud(float[] pointCloud, long timestamp) {
+    
+        if (!lastMessageSent) return;
+        lastMessageSent = false;
+        try {
+            dw.WriteString("p"); //header "p" for point cloud
+            dw.WriteInt64(timestamp);
+            dw.WriteInt64(pointCloud.Length); //length of float elements
+
+            dw.WriteBytes(FloatToBytes(pointCloud)); //write actual data
+
+            await dw.StoreAsync();
+            await dw.FlushAsync();
+        } catch (Exception ex) {
+            SocketErrorStatus webErrorStatus = SocketError.GetStatus(ex.GetBaseException().HResult);
+            Debug.Log(webErrorStatus.ToString() != "Unknown" ? webErrorStatus.ToString() : ex.Message);
+        }
+        lastMessageSent = true;
+
     }
 
     bool lastMessageSent = true;
@@ -193,6 +217,14 @@ public class TCPClient : MonoBehaviour
 
 
     #region Helper Function
+
+    byte[] FloatToBytes(float[] data)
+    {
+        byte[] floatInBytes = new byte[data.Length * sizeof(float)];
+        System.Buffer.BlockCopy(data, 0, floatInBytes, 0, floatInBytes.Length);
+        return floatInBytes;
+    }
+
     byte[] UINT16ToBytes(ushort[] data)
     {
         byte[] ushortInBytes = new byte[data.Length * sizeof(ushort)];
