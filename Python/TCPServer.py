@@ -8,6 +8,8 @@ import cv2
 import time
 #import open3d as o3d
 import pickle as pkl
+from preprocess import reconstruct_pcd, downsample_denoise, mesh_to_pcd_downsample_mri
+from registration import registration
 
 def tcp_server():
     serverHost = '192.168.0.206' # localhost, find the ip of your *computer*
@@ -62,10 +64,20 @@ def tcp_server():
                 filename = "./data/PointCloudCapture/" + timestamp + "_pc.ndarray"
                 print(filename)
                 np.save(filename, pointcloud_np, allow_pickle=True, fix_imports=True)
-
-                # Uncomment this line and obtain transformation matrix from other codes
-                #transformationMatrix = np.float32([2.5,1.5,1.0,1.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0])
-                #conn.send(transformationMatrix.tobytes())
+                
+                # assume the mri mesh is in this folder with this name
+                path = "./mri.stl"
+                # stitch all pieces
+                scan = reconstruct_pcd()
+                # downsample/denoise
+                scan = downsample_denoise(scan)
+                # mri mesh to pcd (downsample)
+                mri = mesh_to_pcd_downsample_mri(path)
+                # registration
+                transformationMatrix = registration(mri, scan)
+                print(transformationMatrix)
+                conn.send(transformationMatrix.tobytes())
+                
             if header == 'r':
                 print('receive an request')
                 transformationMatrix = np.float32([2.5,1.5,1.0,1.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0])
