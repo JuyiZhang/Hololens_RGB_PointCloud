@@ -10,9 +10,9 @@ import time
 import pickle as pkl
 
 def tcp_server():
-    serverHost = '192.168.1.100' # localhost, find the ip of your *computer*
+    serverHost = '192.168.0.206' # localhost, find the ip of your *computer*
     serverPort = 9090
-    save_folder = 'data/'
+    save_folder = './data/'
 
     if not os.path.isdir(save_folder):
         os.mkdir(save_folder)
@@ -59,28 +59,34 @@ def tcp_server():
                 print("Length of point cloud:" + str(N_pointcloud))
                 pointcloud_np = np.frombuffer(data[17:17+N_pointcloud*4], np.float32).reshape((-1,3))
                 timestamp = str(int(time.time()*1000))
-                filename = "PointCloudCapture/" + timestamp + "_pc.ndarray"
+                filename = "./data/PointCloudCapture/" + timestamp + "_pc.ndarray"
                 print(filename)
                 np.save(filename, pointcloud_np, allow_pickle=True, fix_imports=True)
 
                 # Uncomment this line and obtain transformation matrix from other codes
                 #transformationMatrix = np.float32([2.5,1.5,1.0,1.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0])
                 #conn.send(transformationMatrix.tobytes())
+            if header == 'r':
+                print('receive an request')
+                transformationMatrix = np.float32([2.5,1.5,1.0,1.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0])
+                conn.send(transformationMatrix.tobytes())
+                print(f"sent data: {transformationMatrix}")
+
                 
-            if header == "i":
-                # save RGB Image
-                print("Saving RGB Image")
-                timestamp = struct.unpack(">q", data[1:9])[0]
-                N_image = struct.unpack(">q", data[9:17])[0]
-                print("Length of point cloud:" + str(N_image))
-                #image_np = np.frombuffer(data[17:17+N_image*4], np.uint8).reshape((-1,3))
-                timestamp = str(int(time.time()*1000))
-                filename = "ImageCapture/" + timestamp + "_pc.imgdata"
-                f = open(filename, 'wb')
-                f.write(data[17:17+N_image*4])
-                f.close()
-                #print(filename)
-                #np.save(filename, image_np, allow_pickle=True, fix_imports=True)
+            # if header == "i":
+            #     # save RGB Image
+            #     print("Saving RGB Image")
+            #     timestamp = struct.unpack(">q", data[1:9])[0]
+            #     N_image = struct.unpack(">q", data[9:17])[0]
+            #     print("Length of point cloud:" + str(N_image))
+            #     #image_np = np.frombuffer(data[17:17+N_image*4], np.uint8).reshape((-1,3))
+            #     timestamp = str(int(time.time()*1000))
+            #     filename = "ImageCapture/" + timestamp + "_pc.imgdata"
+            #     f = open(filename, 'wb')
+            #     f.write(data[17:17+N_image*4])
+            #     f.close()
+            #     #print(filename)
+            #     #np.save(filename, image_np, allow_pickle=True, fix_imports=True)
 
         except Exception as excep:
             print(type(excep))

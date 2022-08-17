@@ -57,6 +57,7 @@ public class ResearchModeVideoStream : MonoBehaviour
     private byte[] RFFrameData = null;
 
     public UnityEngine.UI.Text text;
+    public UnityEngine.UI.Text serverFeedbackText;
 
     public GameObject pointCloudRendererGo;
     public Color pointColor = Color.white;
@@ -73,7 +74,7 @@ public class ResearchModeVideoStream : MonoBehaviour
         {
             return true;
         }
-        return Vector3.Distance(ClippingSphere.transform.position, Point) < ClippingSphere.transform.localScale.x ? true : false;
+        return Vector3.Distance(ClippingSphere.transform.position, Point) < ClippingSphere.transform.localScale.z ? true : false;
     }
     public void ToggleClipping()
     {
@@ -178,6 +179,7 @@ public class ResearchModeVideoStream : MonoBehaviour
     void LateUpdate()
     {
 #if ENABLE_WINMD_SUPPORT
+        serverFeedbackText.text=tcpClient.getServerFeedback();
 
 
         // Update point cloud
@@ -223,6 +225,17 @@ public class ResearchModeVideoStream : MonoBehaviour
         if (tcpClient != null)
         {
             tcpClient.SendPointCloud(clippedPointCloud, timestamp);
+        }
+#endif
+    }
+
+    public void RequestData()
+    {
+#if WINDOWS_UWP
+        long timestamp = GetCurrentTimestampUnix();
+        if (tcpClient != null)
+        {
+            tcpClient.RequestData(clippedPointCloud, timestamp);
         }
 #endif
     }

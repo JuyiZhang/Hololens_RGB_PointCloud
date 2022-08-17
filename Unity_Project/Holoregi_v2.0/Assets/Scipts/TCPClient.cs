@@ -31,6 +31,9 @@ public class TCPClient : MonoBehaviour
 
     public Renderer ConnectionStatusLED;
     private bool connected = false;
+    private Thread clientRcvThread;
+    private string serverFeedback = "ok";
+    private float[] transformationMatrix = new float[] { };
     public bool Connected
     {
         get { return connected; }
@@ -54,6 +57,11 @@ public class TCPClient : MonoBehaviour
             dr.InputStreamOptions = InputStreamOptions.Partial;
             connected = true;
             ConnectionStatusLED.material.color = Color.green;
+
+            // This is the original part where I created the receive thread for transformation matrix
+            clientRcvThread = new Thread (new ThreadStart(ListenForData));
+            clientRcvThread.IsBackground = true;
+            clientRcvThread.Start();
         }
         catch (Exception ex)
         {
@@ -61,6 +69,18 @@ public class TCPClient : MonoBehaviour
             Debug.Log(webErrorStatus.ToString() != "Unknown" ? webErrorStatus.ToString() : ex.Message);
         }
     }
+
+    // This is the thread where we listen for transformation matrix and updates it
+    private async void ListenForData() {
+        Byte[] bytes = new Byte[sizeof(float)*16];
+        while (true) {
+            await dr.LoadAsync(sizeof(float)*16);
+            dr.ReadBytes(bytes);
+            transformationMatrix = BytesToFloat(bytes);
+            serverFeedback=transformationMatrix[0].ToString();
+        }
+    }
+
 
     private void StopCoonection()
     {
@@ -98,6 +118,25 @@ public class TCPClient : MonoBehaviour
         lastMessageSent = true;
 
     }
+
+    public async void RequestData(float[] pointCloud, long timestamp) {
+    
+        if (!lastMessageSent) return;
+        lastMessageSent = false;
+        try {
+            dw.WriteString("r"); //header "p" for point cloud
+
+            await dw.StoreAsync();
+            await dw.FlushAsync();
+        } catch (Exception ex) {
+            SocketErrorStatus webErrorStatus = SocketError.GetStatus(ex.GetBaseException().HResult);
+            Debug.Log(webErrorStatus.ToString() != "Unknown" ? webErrorStatus.ToString() : ex.Message);
+        }
+        lastMessageSent = true;
+
+
+    }
+
 
     bool lastMessageSent = true;
     public async void SendUINT16Async(ushort[] data)
@@ -224,6 +263,12 @@ public class TCPClient : MonoBehaviour
         System.Buffer.BlockCopy(data, 0, floatInBytes, 0, floatInBytes.Length);
         return floatInBytes;
     }
+    float[] BytesToFloat(byte[] data)
+    {
+        float[] bytesInFloat = new float[data.Length / sizeof(float)];
+        System.Buffer.BlockCopy(data, 0, bytesInFloat, 0, data.Length);
+        return bytesInFloat;
+    }
 
     byte[] UINT16ToBytes(ushort[] data)
     {
@@ -240,6 +285,18 @@ public class TCPClient : MonoBehaviour
         if (!connected) StartCoonection();
         else StopCoonection();
 #endif
+    }
+    #endregion
+
+    #region Properties
+    public float[] getTransformationMatrix()
+    {
+        return transformationMatrix;
+    }
+
+    public string getServerFeedback()
+    {
+        return serverFeedback;
     }
     #endregion
 }

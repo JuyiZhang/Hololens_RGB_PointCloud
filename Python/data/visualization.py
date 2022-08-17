@@ -14,7 +14,26 @@ def visualize(xyz,file_path):
 
     #load and visualize
     pcd_load = o3d.io.read_point_cloud(file_path)
-    o3d.visualization.draw_geometries([pcd_load])
+
+    vis = o3d.visualization.VisualizerWithKeyCallback()
+    vis.create_window()
+    vis.get_render_option().background_color = np.asarray([1, 1, 1])
+    vis.add_geometry(pcd)
+    ctr = vis.get_view_control()
+
+    # parameters = o3d.io.read_pinhole_camera_parameters("ScreenCamera_2022-08-17-10-48-14.json")
+    # ctr.convert_from_pinhole_camera_parameters(parameters)
+    # cam = ctr.convert_to_pinhole_camera_parameters()
+    # cam.extrinsic = np.array(    [1,0,0,0
+    #                              ,0,1,0,0
+    #                              ,0,0,1,-5
+    #                              ,0,0,0,1]).reshape(4,4)  # where T is your matrix
+    # ctr.convert_from_pinhole_camera_parameters(cam)
+
+    #
+    vis.run()
+    vis.destroy_window()
+
 
 def find_K_nearest_neighbours(xyz,K):
 
@@ -69,13 +88,14 @@ def main():
     for i,file in enumerate(xyz_list):
         print(f'{i}/{len(xyz_list)}')
         xyz=np.load(file)
+        xyz[:,2]=-xyz[:,2]
         visualize(xyz,
                   file_path=file.replace('PointCloudCapture', 'PointCloudCapture_denoised').replace('npy', 'ply'))
         if xyz.shape[0]<1:
             continue
         # visualize(xyz,file_path=file.replace('pcd','pcd_denoise').replace('npy','ply'))
-        xyz_denoised=denoise(xyz)
-        visualize(xyz_denoised, file_path=file.replace('PointCloudCapture', 'PointCloudCapture_denoised').replace('npy','ply'))
+        # xyz_denoised=denoise(xyz)
+        # visualize(xyz_denoised, file_path=file.replace('PointCloudCapture', 'PointCloudCapture_denoised').replace('npy','ply'))
     # xyz=np.load(xyz_list[3])
     # visualize(xyz,file_path='./data/test.ply')
     # xyz_denoised=denoise(xyz)
@@ -87,30 +107,3 @@ if __name__=='__main__':
     main()
 
 
-# def custom_draw_geometry_with_key_callback(pcd):
-#     def change_background_to_black(vis):
-#         opt = vis.get_render_option()
-#         opt.background_color = np.asarray([0, 0, 0])
-#         return False
-#     def load_render_option(vis):
-#         vis.get_render_option().load_from_json(
-#                 "../../TestData/renderoption.json")
-#         return False
-#     def capture_depth(vis):
-#         depth = vis.capture_depth_float_buffer()
-#         plt.imshow(np.asarray(depth))
-#         plt.show()
-#         return False
-#     def capture_image(vis):
-#         image = vis.capture_screen_float_buffer()
-#         plt.imshow(np.asarray(image))
-#         plt.show()
-#         return False
-#     key_to_callback = {}
-#     key_to_callback[ord("K")] = change_background_to_black
-#     key_to_callback[ord("R")] = load_render_option
-#     key_to_callback[ord(",")] = capture_depth
-#     key_to_callback[ord(".")] = capture_image
-#     draw_geometries_with_key_callbacks([pcd], key_to_callback)
-#
-# custom_draw_geometry_with_key_callback(point_cloud)
