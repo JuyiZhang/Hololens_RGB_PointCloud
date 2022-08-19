@@ -33,7 +33,10 @@ public class TCPClient : MonoBehaviour
     private bool connected = false;
     private Thread clientRcvThread;
     private string serverFeedback = "ok";
-    private float[] transformationMatrix = new float[] { };
+    private float[] transformationMatrix = new float[] { 1,0,0,0,
+                                                         0,1,0,0,
+                                                         0,0,1,0,
+                                                         0,0,0,1};
     public bool Connected
     {
         get { return connected; }
@@ -77,7 +80,7 @@ public class TCPClient : MonoBehaviour
             await dr.LoadAsync(sizeof(float)*16);
             dr.ReadBytes(bytes);
             transformationMatrix = BytesToFloat(bytes);
-            serverFeedback=transformationMatrix[0].ToString();
+            serverFeedback=transformationMatrix[3].ToString()+","+transformationMatrix[7].ToString()+","+transformationMatrix[11].ToString();
         }
     }
 

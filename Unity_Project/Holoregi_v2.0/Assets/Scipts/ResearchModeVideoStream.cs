@@ -23,6 +23,8 @@ public class ResearchModeVideoStream : MonoBehaviour
     [SerializeField] DepthSensorMode depthSensorMode = DepthSensorMode.ShortThrow;
     [SerializeField] bool enablePointCloud = true;
     [SerializeField] GameObject ClippingSphere;
+    [SerializeField] GameObject HeadObject;
+    private float[] transformationMatrix = new float[] { };
 
     TCPClient tcpClient;
 
@@ -155,6 +157,21 @@ public class ResearchModeVideoStream : MonoBehaviour
         }
 
         tcpClient = GetComponent<TCPClient>();
+        
+
+        // for debugging 
+
+        //transformationMatrix = new float[] {
+        //1,0,0,1,
+        //0,1,0,0,
+        //0,0,1,0,
+        //0,0,0,1,};
+        //transformationMatrix = new float[] {
+        //0.5000000f, -0.5000000f, 0.7071068f,0f,
+        //0.8535534f, 0.1464466f, -0.5000000f,0,
+        //0.1464466f, 0.8535534f, 0.5000000f,0,
+        //0,0,0,1};
+        //UpdateHeadTransformation();
 
 #if ENABLE_WINMD_SUPPORT
         researchMode = new HL2ResearchMode();
@@ -165,6 +182,8 @@ public class ResearchModeVideoStream : MonoBehaviour
         
         researchMode.InitializeSpatialCamerasFront();
         researchMode.SetReferenceCoordinateSystem(unityWorldOrigin);
+        
+        
         researchMode.SetPointCloudDepthOffset(0);
 
         // Depth sensor should be initialized in only one mode
@@ -178,8 +197,11 @@ public class ResearchModeVideoStream : MonoBehaviour
     bool startRealtimePreview = true;
     void LateUpdate()
     {
+
 #if ENABLE_WINMD_SUPPORT
         serverFeedbackText.text=tcpClient.getServerFeedback();
+        transformationMatrix = tcpClient.getTransformationMatrix();
+        UpdateHeadTransformation();
 
 
         // Update point cloud
@@ -228,7 +250,38 @@ public class ResearchModeVideoStream : MonoBehaviour
         }
 #endif
     }
+    private void UpdateHeadTransformation()
+    {
+        //M_r=[r_x,u_x,l_x,p_x,
+        //     r_y,u_y,l_y,p_y,
+        //     r_z,u_z,l_z,p_z,
+        //     0,0,0,1]
 
+        //M_l=[r_x,-u_x,-l_x,-p_x,
+        //     -r_y,u_y,l_y,p_y,
+        //     -r_z,u_z,l_z,p_z,
+        //     0,0,0,1]
+        
+        // it's important that the transformation matrix in python is row-major
+        // while it's column-major in unity!!!!!!!!!!!!!!!!
+
+
+        float[] transformationMatrixInUnity = new float[] { transformationMatrix[0], -transformationMatrix[4], -transformationMatrix[8], -transformationMatrix[12],
+                                                            -transformationMatrix[1], transformationMatrix[5], transformationMatrix[9], transformationMatrix[13],
+                                                            -transformationMatrix[2], transformationMatrix[6], transformationMatrix[10], transformationMatrix[14],
+                                                            -transformationMatrix[3], transformationMatrix[7], transformationMatrix[11], transformationMatrix[15],
+                                                            };
+
+
+        Vector3 regPosition = new Vector3(-transformationMatrix[3], transformationMatrix[7], transformationMatrix[11]);
+        Matrix4x4 transformationMatrix4x4 = new Matrix4x4();
+        for (int i = 0; i < 16; i++)
+        {
+            transformationMatrix4x4[i] = transformationMatrixInUnity[i];
+        }
+        HeadObject.transform.position = regPosition;
+        HeadObject.transform.rotation = transformationMatrix4x4.rotation;
+    }
     public void RequestData()
     {
 #if WINDOWS_UWP
