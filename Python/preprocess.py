@@ -11,6 +11,7 @@ def reconstruct_pcd():
     pcds=[]
     for file in os.listdir(path):
         data = np.load(path+file)
+        data[:,0]=-data[:,0]
         pcd = o3d.geometry.PointCloud()
         pcd.points = o3d.utility.Vector3dVector(data)
         pcds.append(pcd)
@@ -26,7 +27,7 @@ def downsample_denoise(pcd):
     num_pts = np.asarray(pcd.points).shape[0]
 
     # random downsample
-    downsampled_pts = sample(range(num_pts), int(round(num_pts/50)))
+    downsampled_pts = sample(range(num_pts), int(round(num_pts/5)))
     if int(round(num_pts/50)) < 3000:
         print("too few points, sample more data")
     pcd.points = o3d.utility.Vector3dVector(np.asarray(pcd.points)[downsampled_pts,:])
@@ -46,5 +47,11 @@ def mesh_to_pcd_downsample_mri(path):
     mesh = o3d.io.read_triangle_mesh(path)
     pcd = mesh.sample_points_uniformly(number_of_points=10000)
     pcd = pcd.voxel_down_sample(voxel_size=0.005)
+    pcd=pcd.transform(np.asarray([
+        -1,0,0,0,
+        0,1,0,0,
+        0,0,1,0,
+        0,0,0,1
+    ]).reshape(4,4))
     return pcd
 

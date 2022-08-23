@@ -2177,7 +2177,7 @@ MonoBehaviour:
   depthSensorMode: 0
   enablePointCloud: 1
   ClippingSphere: {fileID: 913041437}
-  HeadObject: {fileID: 978796275}
+  HeadObject: {fileID: 969942824}
   depthPreviewPlane: {fileID: 456786859}
   shortAbImagePreviewPlane: {fileID: 349520856}
   longDepthPreviewPlane: {fileID: 891683166}
@@ -2341,6 +2341,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RootOrder
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7060917275697374889, guid: 0d15c92a36ecdc04fb99959317122986,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7060917275697374889, guid: 0d15c92a36ecdc04fb99959317122986,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7060917275697374889, guid: 0d15c92a36ecdc04fb99959317122986,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 7060917275697374889, guid: 0d15c92a36ecdc04fb99959317122986,
         type: 3}
@@ -2916,9 +2931,9 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.032, y: 0.032, z: 0.016}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1 &978796275 stripped
+--- !u!1 &969942824 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 4576017457701428021, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
+  m_CorrespondingSourceObject: {fileID: 4805397487899981396, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
     type: 3}
   m_PrefabInstance: {fileID: 27228176}
   m_PrefabAsset: {fileID: 0}

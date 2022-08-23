@@ -6,18 +6,24 @@ import os
 import numpy as np
 import cv2
 import time
-#import open3d as o3d
+import open3d as o3d
 import pickle as pkl
 from preprocess import reconstruct_pcd, downsample_denoise, mesh_to_pcd_downsample_mri
 from registration import registration
+import shutil
+import copy
 
 def tcp_server():
     serverHost = '192.168.0.206' # localhost, find the ip of your *computer*
     serverPort = 9090
-    save_folder = './data/'
+    save_folder = './data/PointCloudCapture'
 
     if not os.path.isdir(save_folder):
         os.mkdir(save_folder)
+    else:
+        shutil.rmtree(save_folder)
+        os.mkdir(save_folder)
+
 
     # Create a socket
     sSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -64,7 +70,10 @@ def tcp_server():
                 filename = "./data/PointCloudCapture/" + timestamp + "_pc.ndarray"
                 print(filename)
                 np.save(filename, pointcloud_np, allow_pickle=True, fix_imports=True)
+
                 
+            if header == 'r':
+                print('receive an request')
                 # assume the mri mesh is in this folder with this name
                 path = "./mri.stl"
                 # stitch all pieces
@@ -75,14 +84,11 @@ def tcp_server():
                 mri = mesh_to_pcd_downsample_mri(path)
                 # registration
                 transformationMatrix = registration(mri, scan)
+
                 print(transformationMatrix)
-                conn.send(transformationMatrix.tobytes())
-                
-            if header == 'r':
-                print('receive an request')
-                transformationMatrix = np.float32([2.5,1.5,1.0,1.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0])
-                conn.send(transformationMatrix.tobytes())
-                print(f"sent data: {transformationMatrix}")
+                conn.send(transformationMatrix.reshape(-1).astype(np.float32).tobytes())
+                print(f"sent data:\n {transformationMatrix}")
+                draw_registration_result(mri, scan, transformationMatrix)
 
                 
             # if header == "i":
@@ -108,6 +114,32 @@ def tcp_server():
     print('Closing socket...')
     sSock.close()
 
+def draw_registration_result(source, target, transformation):
+    source_temp = copy.deepcopy(source)
+    target_temp = copy.deepcopy(target)
+    source_temp.paint_uniform_color([1, 0.706, 0])
+    target_temp.paint_uniform_color([0, 0.651, 0.929])
+    source_temp.transform(transformation)
+    o3d.visualization.draw_geometries([source_temp, target_temp])
 
 if __name__ == "__main__":
-    tcp_server()
+    entrance=1
+    if entrance==1:
+        tcp_server()
+    else:
+        path = "./mri.stl"
+        # stitch all pieces
+        scan = reconstruct_pcd()
+        # downsample/denoise
+        scan = downsample_denoise(scan)
+        # mri mesh to pcd (downsample)
+        mri = mesh_to_pcd_downsample_mri(path)
+        # registration
+        transformationMatrix = registration(mri, scan)
+        draw_registration_result(mri,scan,transformationMatrix)
+
+
+        print(transformationMatrix)
+
+
+

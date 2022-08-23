@@ -34,7 +34,7 @@ def execute_fast_global_registration(source_down, target_down, source_fpfh,
     distance_threshold = voxel_size * 0.5
     
 
-    result = o3d.pipelines.registration.registration_fast_based_on_feature_matching(
+    result = o3d.pipelines.registration.registration_fgr_based_on_feature_matching(
         source_down, target_down, source_fpfh, target_fpfh,
         o3d.pipelines.registration.FastGlobalRegistrationOption(
             maximum_correspondence_distance=distance_threshold))
