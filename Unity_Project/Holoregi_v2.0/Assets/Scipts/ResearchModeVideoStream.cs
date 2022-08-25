@@ -57,6 +57,7 @@ public class ResearchModeVideoStream : MonoBehaviour
     private Material RFMediaMaterial = null;
     private Texture2D RFMediaTexture = null;
     private byte[] RFFrameData = null;
+    private int numSendFrames = 0;
 
     public UnityEngine.UI.Text text;
     public UnityEngine.UI.Text serverFeedbackText;
@@ -98,6 +99,7 @@ public class ResearchModeVideoStream : MonoBehaviour
     }
     void Start()
     {
+     
         if (depthSensorMode == DepthSensorMode.ShortThrow)
         {
             if (depthPreviewPlane != null)
@@ -200,8 +202,17 @@ public class ResearchModeVideoStream : MonoBehaviour
 
 #if ENABLE_WINMD_SUPPORT
         serverFeedbackText.text=tcpClient.getServerFeedback();
-        transformationMatrix = tcpClient.getTransformationMatrix();
-        UpdateHeadTransformation();
+        //HeadObject.transform.localScale=new Vector3(1f,1f,1f);
+        //serverFeedbackText.text=HeadObject.transform.localToWorldMatrix.ToString();
+        //HeadObject.transform.localScale=new Vector3(0.001f,0.001f,0.001f);
+        if (tcpClient.updatedTransformation)
+        {
+
+            transformationMatrix = tcpClient.getTransformationMatrix();
+            UpdateHeadTransformation();
+            tcpClient.updatedTransformation=false;
+        }
+
 
 
         // Update point cloud
@@ -243,6 +254,7 @@ public class ResearchModeVideoStream : MonoBehaviour
     public void sendCurrentFrame()
     {
 #if WINDOWS_UWP
+        numSendFrames+=1;
         long timestamp = GetCurrentTimestampUnix();
         if (tcpClient != null)
         {
@@ -287,9 +299,19 @@ public class ResearchModeVideoStream : MonoBehaviour
 #if WINDOWS_UWP
         long timestamp = GetCurrentTimestampUnix();
         if (tcpClient != null)
-        {
-            tcpClient.RequestData(clippedPointCloud, timestamp);
-        }
+        {   HeadObject.transform.localScale=new Vector3(1f,1f,1f);
+            
+    
+            Matrix4x4 transformationMatrix4x4 =  HeadObject.transform.localToWorldMatrix;
+            HeadObject.transform.localScale=new Vector3(0.001f,0.001f,0.001f);
+            float[] transformationMatrix=new float[16];
+            for (int i=0;i<16;i++)
+            {
+                transformationMatrix[i]=transformationMatrix4x4[i];
+            }
+            tcpClient.RequestData(transformationMatrix, timestamp);
+        };
+        
 #endif
     }
 

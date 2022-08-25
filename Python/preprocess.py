@@ -27,14 +27,14 @@ def downsample_denoise(pcd):
     num_pts = np.asarray(pcd.points).shape[0]
 
     # random downsample
-    downsampled_pts = sample(range(num_pts), int(round(num_pts/5)))
+    downsampled_pts = sample(range(num_pts), int(round(num_pts/1)))
     if int(round(num_pts/50)) < 3000:
         print("too few points, sample more data")
-    pcd.points = o3d.utility.Vector3dVector(np.asarray(pcd.points)[downsampled_pts,:])
+    # pcd.points = o3d.utility.Vector3dVector(np.asarray(pcd.points)[downsampled_pts,:])
 
     # denoise
-    pcd, _ = pcd.remove_statistical_outlier(nb_neighbors=10, std_ratio=1.0)
-    pcd, _ = pcd.remove_statistical_outlier(nb_neighbors=10, std_ratio=1.0)
+    pcd, _ = pcd.remove_statistical_outlier(nb_neighbors=10, std_ratio=1.5)
+    pcd, _ = pcd.remove_statistical_outlier(nb_neighbors=10, std_ratio=1.5)
 
     # voxel downsample
     pcd = pcd.voxel_down_sample(voxel_size=0.005)
@@ -45,8 +45,11 @@ def downsample_denoise(pcd):
 
 def mesh_to_pcd_downsample_mri(path):
     mesh = o3d.io.read_triangle_mesh(path)
+    if path=="./realPatient.stl":
+        mesh=mesh.scale(0.001,[0,0,0])
     pcd = mesh.sample_points_uniformly(number_of_points=10000)
     pcd = pcd.voxel_down_sample(voxel_size=0.005)
+
     pcd=pcd.transform(np.asarray([
         -1,0,0,0,
         0,1,0,0,

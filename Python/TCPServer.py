@@ -14,7 +14,8 @@ import shutil
 import copy
 
 def tcp_server():
-    serverHost = '192.168.0.206' # localhost, find the ip of your *computer*
+    # serverHost = '10.129.242.231' # localhost, find the ip of your *computer*
+    serverHost = '192.168.0.206'
     serverPort = 9090
     save_folder = './data/PointCloudCapture'
 
@@ -74,20 +75,33 @@ def tcp_server():
                 
             if header == 'r':
                 print('receive an request')
+                T_Unity = np.frombuffer(data[1:(1+4*16)], np.float32).reshape((4, 4))
+                T_O3D=convertTransformationToOpen3d(T_Unity)
+                print(f"T of MRI:\n {T_O3D}")
                 # assume the mri mesh is in this folder with this name
-                path = "./mri.stl"
+                path = "./realPatient.stl"
+                # path = "./mri.stl"
                 # stitch all pieces
                 scan = reconstruct_pcd()
                 # downsample/denoise
                 scan = downsample_denoise(scan)
                 # mri mesh to pcd (downsample)
                 mri = mesh_to_pcd_downsample_mri(path)
-                # registration
+                # T_O3D=np.asarray([
+                #     -1,0,0,0,
+                #     0,1,0,0,
+                #     0,0,1,0,
+                #     0,0,0,1
+                # ]).reshape(4,4)
+                # mri=mri.transform(T_O3D)
+                # o3d.visualization.draw_geometries([mri,scan])
+                # # registration
                 transformationMatrix = registration(mri, scan)
-
+                # draw_registration_result(mri, scan, transformationMatrix)
+                #
                 print(transformationMatrix)
                 conn.send(transformationMatrix.reshape(-1).astype(np.float32).tobytes())
-                print(f"sent data:\n {transformationMatrix}")
+                # print(f"sent data:\n {transformationMatrix}")
                 draw_registration_result(mri, scan, transformationMatrix)
 
                 
@@ -114,6 +128,13 @@ def tcp_server():
     print('Closing socket...')
     sSock.close()
 
+def convertTransformationToOpen3d(matrixInUnity):
+    matrixInO3D=np.copy(matrixInUnity)
+    matrixInO3D=matrixInO3D.T
+    matrixInO3D[0,:]=-matrixInO3D[0,:]
+    return matrixInO3D
+
+
 def draw_registration_result(source, target, transformation):
     source_temp = copy.deepcopy(source)
     target_temp = copy.deepcopy(target)
@@ -123,23 +144,35 @@ def draw_registration_result(source, target, transformation):
     o3d.visualization.draw_geometries([source_temp, target_temp])
 
 if __name__ == "__main__":
-    entrance=1
+    entrance=2
     if entrance==1:
         tcp_server()
     else:
+        # path = "./realPatient.stl"
         path = "./mri.stl"
         # stitch all pieces
         scan = reconstruct_pcd()
         # downsample/denoise
         scan = downsample_denoise(scan)
+        o3d.io.write_point_cloud("reconstruction of phantom head.pcd", scan)
         # mri mesh to pcd (downsample)
+        o3d.visualization.draw_geometries([scan])
         mri = mesh_to_pcd_downsample_mri(path)
-        # registration
+        # T_O3D = np.asarray([
+        #     -1, 0, 0, 0,
+        #     0, 1, 0, 0,
+        #     0, 0, 1, 0,
+        #     0, 0, 0, 1
+        # ]).reshape(4, 4)
+        # mri = mri.transform(T_O3D)
+        o3d.visualization.draw_geometries([mri, scan])
+        # # registration
         transformationMatrix = registration(mri, scan)
-        draw_registration_result(mri,scan,transformationMatrix)
-
-
+        # draw_registration_result(mri, scan, transformationMatrix)
+        #
         print(transformationMatrix)
+         # print(f"sent data:\n {transformationMatrix}")
+        draw_registration_result(mri, scan, transformationMatrix)
 
 
 

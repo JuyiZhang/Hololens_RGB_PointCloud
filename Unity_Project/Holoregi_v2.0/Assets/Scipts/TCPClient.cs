@@ -30,13 +30,16 @@ public class TCPClient : MonoBehaviour
     string hostIPAddress, port;
 
     public Renderer ConnectionStatusLED;
+    public bool updatedTransformation = true;
     private bool connected = false;
     private Thread clientRcvThread;
-    private string serverFeedback = "ok";
+    private string serverFeedback= "feedback from server";
+    private int numSendFrames = 0;
     private float[] transformationMatrix = new float[] { 1,0,0,0,
                                                          0,1,0,0,
                                                          0,0,1,0,
                                                          0,0,0,1};
+    
     public bool Connected
     {
         get { return connected; }
@@ -80,7 +83,9 @@ public class TCPClient : MonoBehaviour
             await dr.LoadAsync(sizeof(float)*16);
             dr.ReadBytes(bytes);
             transformationMatrix = BytesToFloat(bytes);
-            serverFeedback=transformationMatrix[3].ToString()+","+transformationMatrix[7].ToString()+","+transformationMatrix[11].ToString();
+
+            serverFeedback="receivee transformation matrix!";
+            updatedTransformation=true;
         }
     }
 
@@ -119,15 +124,18 @@ public class TCPClient : MonoBehaviour
             Debug.Log(webErrorStatus.ToString() != "Unknown" ? webErrorStatus.ToString() : ex.Message);
         }
         lastMessageSent = true;
+        numSendFrames+=1;
+        serverFeedback="send " + numSendFrames.ToString() + " frames of point cloud";
 
     }
 
-    public async void RequestData(float[] pointCloud, long timestamp) {
+    public async void RequestData(float[] TransformationMRI, long timestamp) {
     
         if (!lastMessageSent) return;
         lastMessageSent = false;
         try {
             dw.WriteString("r"); //header "p" for point cloud
+            dw.WriteBytes(FloatToBytes(TransformationMRI));
 
             await dw.StoreAsync();
             await dw.FlushAsync();
