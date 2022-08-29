@@ -143,11 +143,48 @@ def draw_registration_result(source, target, transformation):
     source_temp.transform(transformation)
     o3d.visualization.draw_geometries([source_temp, target_temp])
 
+def getCoordinate():
+    xyz = np.asarray([
+        0, 0, 0,
+        1, 0, 0,
+        2, 0, 0,
+        3, 0, 0,
+        0, 1, 0,
+        0, 2, 0,
+        0, 3, 0,
+        0, 4, 0,
+        0, 5, 0,
+        0, 6, 0,
+        0, 0, 1,
+        0, 0, 2,
+        0, 0, 3,
+        0, 0, 4,
+        0, 0, 5,
+        0, 0, 6,
+        0, 0, 7,
+        0, 0, 8,
+        0, 0, 9,
+        0, 0, 10,
+        0, 0, 11,
+        0, 0, 12,
+        0, 0, 13,
+        0.396978 ,- 10.983915 ,- 14.971905
+    ]).reshape(-1, 3) * 0.01
+
+    pcd = o3d.geometry.PointCloud()
+    pcd.points = o3d.utility.Vector3dVector(xyz)
+    return pcd
+
 if __name__ == "__main__":
     entrance=2
     if entrance==1:
         tcp_server()
-    else:
+    elif entrance==2:
+
+        pcd_coord=getCoordinate()
+        mesh = o3d.geometry.TriangleMesh.create_coordinate_frame()
+        mesh=mesh.scale(1,mesh.get_center())
+        # o3d.visualization.draw_geometries([pcd_coord])
         # path = "./realPatient.stl"
         path = "./mri.stl"
         # stitch all pieces
@@ -156,8 +193,9 @@ if __name__ == "__main__":
         scan = downsample_denoise(scan)
         o3d.io.write_point_cloud("reconstruction of phantom head.pcd", scan)
         # mri mesh to pcd (downsample)
-        o3d.visualization.draw_geometries([scan])
+        # o3d.visualization.draw_geometries([scan,pcd_coord])
         mri = mesh_to_pcd_downsample_mri(path)
+        print(f"Objects center: {mri.get_center()}")
         # T_O3D = np.asarray([
         #     -1, 0, 0, 0,
         #     0, 1, 0, 0,
@@ -165,7 +203,14 @@ if __name__ == "__main__":
         #     0, 0, 0, 1
         # ]).reshape(4, 4)
         # mri = mri.transform(T_O3D)
-        o3d.visualization.draw_geometries([mri, scan])
+        o3d.visualization.draw_geometries([mri, pcd_coord, scan,mesh])
+        mri = mri.transform(np.asarray([
+            0, 0, 1, 0,
+            0, 1, 0, 0,
+            -1, 0, 0, 0,
+            0, 0, 0, 1
+        ]).reshape(4, 4))
+        o3d.visualization.draw_geometries([mri,pcd_coord, scan])
         # # registration
         transformationMatrix = registration(mri, scan)
         # draw_registration_result(mri, scan, transformationMatrix)
@@ -173,6 +218,9 @@ if __name__ == "__main__":
         print(transformationMatrix)
          # print(f"sent data:\n {transformationMatrix}")
         draw_registration_result(mri, scan, transformationMatrix)
+    else:
+        pcd=o3d.io.read_point_cloud('reconstruction of phantom head.pcd')
+        o3d.visualization.draw_geometries([pcd])
 
 
 
