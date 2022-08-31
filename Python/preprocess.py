@@ -51,7 +51,7 @@ def mesh_to_pcd_downsample_mri(path):
     pcd = pcd.voxel_down_sample(voxel_size=0.005)
 
     pcd=pcd.transform(np.asarray([
-        -1,0,0,0,
+        1,0,0,0,
         0,1,0,0,
         0,0,1,0,
         0,0,0,1

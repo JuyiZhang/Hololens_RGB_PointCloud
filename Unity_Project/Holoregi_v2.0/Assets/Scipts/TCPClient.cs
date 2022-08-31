@@ -30,7 +30,7 @@ public class TCPClient : MonoBehaviour
     string hostIPAddress, port;
 
     public Renderer ConnectionStatusLED;
-    public bool updatedTransformation = true;
+    public bool updatedTransformation = false;
     private bool connected = false;
     private Thread clientRcvThread;
     private string serverFeedback= "feedback from server";

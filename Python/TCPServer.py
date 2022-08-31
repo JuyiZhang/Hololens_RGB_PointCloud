@@ -171,6 +171,32 @@ def getCoordinate():
         0, 0, 11,
         0, 0, 12,
         0, 0, 13,
+        0, 0, -1,
+        0, 0, -2,
+        0, 0, -3,
+        0, 0, -4,
+        0, 0, -5,
+        0, 0, -6,
+        0, 0, -7,
+        0, 0, -8,
+        0, 0, -9,
+        0, 0, -10,
+        0, 0, -11,
+        0, 0, -12,
+        0, 0, -13,
+        0, 0, -14,
+        0, 0, -15,
+        0, 0, -16,
+        0, 0, -17,
+        0, 0, -18,
+        0, 0, -19,
+        0, 0, -20,
+        0, 0, -21,
+        0, 0, -22,
+        0, 0, -23,
+        0, 0, -24,
+        0, 0, -25,
+
     ]).reshape(-1, 3) * 0.01
 
     pcd = o3d.geometry.PointCloud()
@@ -184,8 +210,6 @@ if __name__ == "__main__":
     elif entrance==2:
 
         pcd_coord=getCoordinate()
-        mesh = o3d.geometry.TriangleMesh.create_coordinate_frame()
-        mesh=mesh.scale(1,mesh.get_center())
         # o3d.visualization.draw_geometries([pcd_coord])
         # path = "./realPatient.stl"
         path = "./mri.stl"
@@ -205,7 +229,7 @@ if __name__ == "__main__":
         #     0, 0, 0, 1
         # ]).reshape(4, 4)
         # mri = mri.transform(T_O3D)
-        o3d.visualization.draw_geometries([mri, pcd_coord, scan,mesh])
+        o3d.visualization.draw_geometries([mri, pcd_coord, scan])
         # mri = mri.transform(np.asarray([
         #     0, 0, 1, 0,
         #     0, 1, 0, 0,
