@@ -74,17 +74,20 @@ def tcp_server():
 
                 
             if header == 'r':
+                pcd_coord = getCoordinate()
+
                 print('receive an request')
                 T_Unity = np.frombuffer(data[1:(1+4*16)], np.float32).reshape((4, 4))
                 T_O3D=convertTransformationToOpen3d(T_Unity)
                 print(f"T of MRI:\n {T_O3D}")
                 # assume the mri mesh is in this folder with this name
-                path = "./realPatient.stl"
-                # path = "./mri.stl"
+                # path = "./realPatient.stl"
+                path = "./mri.stl"
                 # stitch all pieces
                 scan = reconstruct_pcd()
                 # downsample/denoise
                 scan = downsample_denoise(scan)
+                o3d.visualization.draw_geometries([scan,pcd_coord])
                 # mri mesh to pcd (downsample)
                 mri = mesh_to_pcd_downsample_mri(path)
                 # T_O3D=np.asarray([
@@ -94,7 +97,7 @@ def tcp_server():
                 #     0,0,0,1
                 # ]).reshape(4,4)
                 # mri=mri.transform(T_O3D)
-                # o3d.visualization.draw_geometries([mri,scan])
+                o3d.visualization.draw_geometries([mri,pcd_coord,scan])
                 # # registration
                 transformationMatrix = registration(mri, scan)
                 # draw_registration_result(mri, scan, transformationMatrix)
@@ -168,7 +171,6 @@ def getCoordinate():
         0, 0, 11,
         0, 0, 12,
         0, 0, 13,
-        0.396978 ,- 10.983915 ,- 14.971905
     ]).reshape(-1, 3) * 0.01
 
     pcd = o3d.geometry.PointCloud()
@@ -176,7 +178,7 @@ def getCoordinate():
     return pcd
 
 if __name__ == "__main__":
-    entrance=2
+    entrance=1
     if entrance==1:
         tcp_server()
     elif entrance==2:
@@ -193,7 +195,7 @@ if __name__ == "__main__":
         scan = downsample_denoise(scan)
         o3d.io.write_point_cloud("reconstruction of phantom head.pcd", scan)
         # mri mesh to pcd (downsample)
-        # o3d.visualization.draw_geometries([scan,pcd_coord])
+        o3d.visualization.draw_geometries([scan,pcd_coord])
         mri = mesh_to_pcd_downsample_mri(path)
         print(f"Objects center: {mri.get_center()}")
         # T_O3D = np.asarray([
@@ -204,12 +206,12 @@ if __name__ == "__main__":
         # ]).reshape(4, 4)
         # mri = mri.transform(T_O3D)
         o3d.visualization.draw_geometries([mri, pcd_coord, scan,mesh])
-        mri = mri.transform(np.asarray([
-            0, 0, 1, 0,
-            0, 1, 0, 0,
-            -1, 0, 0, 0,
-            0, 0, 0, 1
-        ]).reshape(4, 4))
+        # mri = mri.transform(np.asarray([
+        #     0, 0, 1, 0,
+        #     0, 1, 0, 0,
+        #     -1, 0, 0, 0,
+        #     0, 0, 0, 1
+        # ]).reshape(4, 4))
         o3d.visualization.draw_geometries([mri,pcd_coord, scan])
         # # registration
         transformationMatrix = registration(mri, scan)
