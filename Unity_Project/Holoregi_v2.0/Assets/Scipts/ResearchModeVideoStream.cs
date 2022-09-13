@@ -159,7 +159,8 @@ public class ResearchModeVideoStream : MonoBehaviour
         }
 
         tcpClient = GetComponent<TCPClient>();
-        
+        tcpClient.ConnectToServerEvent();
+
 
         // for debugging 
 

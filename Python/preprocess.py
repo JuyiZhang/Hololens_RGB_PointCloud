@@ -45,8 +45,8 @@ def downsample_denoise(pcd):
 
 def mesh_to_pcd_downsample_mri(path):
     mesh = o3d.io.read_triangle_mesh(path)
-    if path=="./realPatient.stl":
-        mesh=mesh.scale(0.001,[0,0,0])
+    # if path=="./realPatient.stl":
+    #     mesh=mesh.scale(0.001,[0,0,0])
     pcd = mesh.sample_points_uniformly(number_of_points=10000)
     pcd = pcd.voxel_down_sample(voxel_size=0.005)
 

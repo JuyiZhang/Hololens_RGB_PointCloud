@@ -42,7 +42,7 @@ def execute_fast_global_registration(source_down, target_down, source_fpfh,
                 0.9),
             o3d.pipelines.registration.CorrespondenceCheckerBasedOnDistance(
                 distance_threshold)
-        ], o3d.pipelines.registration.RANSACConvergenceCriteria(100000, 0.999))
+        ], o3d.pipelines.registration.RANSACConvergenceCriteria(5000000, 0.999999))
     return result
 
 
