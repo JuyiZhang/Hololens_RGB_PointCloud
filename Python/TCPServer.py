@@ -13,11 +13,11 @@ from registration import registration
 import shutil
 import copy
 
-real_patient=True
+real_patient=False
 
 def tcp_server():
-    # serverHost = '10.129.242.231' # localhost, find the ip of your *computer*
-    serverHost = '192.168.43.8'
+    serverHost = '10.5.87.195' # localhost, find the ip of your *computer*
+    # serverHost = '192.168.43.8'
     serverPort = 9090
     save_folder = './data/PointCloudCapture'
 
@@ -209,7 +209,7 @@ def getCoordinate():
     return pcd
 
 if __name__ == "__main__":
-    entrance=2
+    entrance=1
     if entrance==1:
         tcp_server()
     elif entrance==2:
@@ -227,7 +227,7 @@ if __name__ == "__main__":
         scan = downsample_denoise(scan)
         o3d.io.write_point_cloud("reconstruction of phantom head.pcd", scan)
         # mri mesh to pcd (downsample)
-        # o3d.visualization.draw_geometries([scan,pcd_coord])
+        o3d.visualization.draw_geometries([scan,pcd_coord])
         mri = mesh_to_pcd_downsample_mri(path)
         print(f"Objects center: {mri.get_center()}")
         # T_O3D = np.asarray([
