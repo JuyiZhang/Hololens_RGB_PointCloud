@@ -22,7 +22,7 @@ def initCaptureFolder(saveFolder):
     if not os.path.isdir(saveFolder):
         os.mkdir(saveFolder)
     else:
-        os.rename(saveFolder,saveFolder+now)
+        os.rename(saveFolder,saveFolder+f"_{sourceType}_"+now)
         os.mkdir(saveFolder)
         shutil.rmtree(saveFolder)
         os.mkdir(saveFolder)
