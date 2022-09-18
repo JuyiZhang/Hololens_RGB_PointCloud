@@ -15,6 +15,7 @@ import copy
 import datetime
 
 sourceType="PhantomHead"
+# sourceType="PatientMRI"
 entrance=1
 
 def initCaptureFolder(saveFolder):
@@ -232,7 +233,7 @@ if __name__ == "__main__":
     if entrance==1:
         tcp_server()
     elif entrance==2:
-        sourceType="PatientMRI"
+        # sourceType="PatientMRI"
 
         pcd_coord=getCoordinate()
 

@@ -3,11 +3,11 @@ import time
 
 
 def preprocess_point_cloud(pcd, voxel_size):
-    radius_normal = voxel_size * 8 #2
+    radius_normal = voxel_size * 2
     pcd.estimate_normals(
         o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=30))
 
-    radius_feature = voxel_size * 5 #5
+    radius_feature = voxel_size * 5
 
     # fpfh feature
     pcd_fpfh = o3d.pipelines.registration.compute_fpfh_feature(
@@ -33,16 +33,14 @@ def execute_fast_global_registration(source_down, target_down, source_fpfh,
     distance_threshold = voxel_size * 0.5
 
     result = o3d.pipelines.registration.registration_ransac_based_on_feature_matching(
-        source_down, target_down, source_fpfh, target_fpfh, True,
+        source_down, target_down, source_fpfh, target_fpfh, False,
         distance_threshold,
         o3d.pipelines.registration.TransformationEstimationPointToPoint(False),
         3, [
             o3d.pipelines.registration.CorrespondenceCheckerBasedOnEdgeLength(
                 0.9),
             o3d.pipelines.registration.CorrespondenceCheckerBasedOnDistance(
-                distance_threshold),
-            o3d.pipelines.registration.CorrespondenceCheckerBasedOnNormal(
-                3.1415926/180.0*60)
+                distance_threshold)
         ], o3d.pipelines.registration.RANSACConvergenceCriteria(5000000, 0.999999))
     return result
 
