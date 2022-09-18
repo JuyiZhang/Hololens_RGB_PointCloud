@@ -1,13 +1,13 @@
 import open3d as o3d
 import time
 
-def preprocess_point_cloud(pcd, voxel_size):
 
-    radius_normal = voxel_size * 2
+def preprocess_point_cloud(pcd, voxel_size):
+    radius_normal = voxel_size * 8 #2
     pcd.estimate_normals(
         o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=30))
 
-    radius_feature = voxel_size * 5
+    radius_feature = voxel_size * 5 #5
 
     # fpfh feature
     pcd_fpfh = o3d.pipelines.registration.compute_fpfh_feature(
@@ -16,17 +16,16 @@ def preprocess_point_cloud(pcd, voxel_size):
 
     return pcd, pcd_fpfh
 
-def prepare_dataset(voxel_size, source, target):
 
+def prepare_dataset(voxel_size, source, target):
     ## source = mri
     ## target = scanned
-    
+
     target.estimate_normals()
 
     source_down, source_fpfh = preprocess_point_cloud(source, voxel_size)
     target_down, target_fpfh = preprocess_point_cloud(target, voxel_size)
     return source, target, source_down, target_down, source_fpfh, target_fpfh
-
 
 
 def execute_fast_global_registration(source_down, target_down, source_fpfh,
@@ -41,7 +40,9 @@ def execute_fast_global_registration(source_down, target_down, source_fpfh,
             o3d.pipelines.registration.CorrespondenceCheckerBasedOnEdgeLength(
                 0.9),
             o3d.pipelines.registration.CorrespondenceCheckerBasedOnDistance(
-                distance_threshold)
+                distance_threshold),
+            o3d.pipelines.registration.CorrespondenceCheckerBasedOnNormal(
+                3.1415926/180.0*60)
         ], o3d.pipelines.registration.RANSACConvergenceCriteria(5000000, 0.999999))
     return result
 
@@ -58,7 +59,6 @@ def refine_registration(source, target, source_fpfh, target_fpfh, voxel_size, re
     return result
 
 
-
 def registration(source, target):
     ## source = mri
     ## target = scanned
@@ -66,12 +66,12 @@ def registration(source, target):
     source, target, source_down, target_down, source_fpfh, target_fpfh = prepare_dataset(voxel_size, source, target)
     start = time.time()
     result_fast = execute_fast_global_registration(source_down, target_down,
-                                                source_fpfh, target_fpfh,
-                                                voxel_size)
+                                                   source_fpfh, target_fpfh,
+                                                   voxel_size)
     print("Global registration took %.3f sec.\n" % (time.time() - start))
 
     result_icp = refine_registration(source, target, source_fpfh, target_fpfh,
-                                    voxel_size, result_fast)
+                                     voxel_size, result_fast)
     print(result_icp)
     transformationMatrix = result_icp.transformation
     return transformationMatrix

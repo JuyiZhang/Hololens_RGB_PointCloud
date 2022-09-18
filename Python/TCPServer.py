@@ -98,12 +98,13 @@ def tcp_server():
                 print(f"T of MRI:\n {T_O3D}")
                 # assume the mri mesh is in this folder with this name
                 # sourcePath = "./realPatient.stl"
+                print(f"source type: {sourceType}")
                 if sourceType == "PhantomHead":
-                    sourcePath = "./phantomHead.stl"
+                    sourcePath = "./phantomHeadCrop.stl"
                 elif sourceType == "PatientCT":
-                    sourcePath = "./patientCT.stl"
+                    sourcePath = "./patientCTCrop.stl"
                 else:
-                    sourcePath = "./patientMRI.stl"
+                    sourcePath = "./patientMRICrop.stl"
 
                 # stitch all pieces
                 scan = reconstruct_pcd()
@@ -231,24 +232,27 @@ if __name__ == "__main__":
     if entrance==1:
         tcp_server()
     elif entrance==2:
+        sourceType="PatientMRI"
 
         pcd_coord=getCoordinate()
 
         # o3d.visualization.draw_geometries([pcd_coord])
         # path = "./realPatient.stl"
         if sourceType == "PhantomHead":
-            sourcePath = "./phantomHead.stl"
+            sourcePath = "./phantomHeadCrop.stl"
         elif sourceType == "PatientCT":
-            sourcePath = "./patientCT.stl"
+            # sourcePath = "./patientCT.stl"
+            sourcePath = "./patientCTCrop.stl"
         else:
-            sourcePath = "./patientMRI.stl"
+            # sourcePath = "./patientMRI.stl"
+            sourcePath = "./patientMRICrop.stl"
         # stitch all pieces
         scan = reconstruct_pcd()
         # downsample/denoise
         scan = downsample_denoise(scan)
         o3d.io.write_point_cloud("reconstruction of phantom head.pcd", scan)
         # mri mesh to pcd (downsample)
-        o3d.visualization.draw_geometries([scan,pcd_coord])
+        # o3d.visualization.draw_geometries([scan,pcd_coord])
         mri = mesh_to_pcd_downsample_mri(sourcePath)
         o3d.visualization.draw_geometries([mri, pcd_coord, scan])
         # mri = mri.transform(np.asarray([
