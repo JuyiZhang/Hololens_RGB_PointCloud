@@ -128,6 +128,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 211650943113255513, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 10000
+      objectReference: {fileID: 0}
+    - target: {fileID: 211650943113255513, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 10000
+      objectReference: {fileID: 0}
+    - target: {fileID: 211650943113255513, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 10000
+      objectReference: {fileID: 0}
     - target: {fileID: 561419201694654988, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -168,6 +183,36 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1531977727466057426, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 100000
+      objectReference: {fileID: 0}
+    - target: {fileID: 1531977727466057426, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 100000
+      objectReference: {fileID: 0}
+    - target: {fileID: 1531977727466057426, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 100000
+      objectReference: {fileID: 0}
+    - target: {fileID: 2875213606597743844, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2875213606597743844, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2875213606597743844, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 4576017457701428021, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
         type: 3}
       propertyPath: m_IsActive
@@ -196,7 +241,7 @@ PrefabInstance:
     - target: {fileID: 4805397487899981396, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
         type: 3}
       propertyPath: m_Name
-      value: head
+      value: SourceContainer
       objectReference: {fileID: 0}
     - target: {fileID: 4805397487899981396, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
         type: 3}
@@ -222,6 +267,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RootOrder
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5331104321312746734, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.001
+      objectReference: {fileID: 0}
+    - target: {fileID: 5331104321312746734, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.001
+      objectReference: {fileID: 0}
+    - target: {fileID: 5331104321312746734, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.001
       objectReference: {fileID: 0}
     - target: {fileID: 5331104321312746734, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
         type: 3}
@@ -285,6 +345,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e6fbe0a10de20da49bf4ccf90ab472fe, type: 3}
+--- !u!1 &27228177 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3219263557515382366, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
+    type: 3}
+  m_PrefabInstance: {fileID: 27228176}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &46054712
 GameObject:
   m_ObjectHideFlags: 0
@@ -1018,6 +1084,51 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 891080480}
           m_MethodName: TogglePointCloudEvent
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - keyword: TestPhantomHead
+    response:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 891080480}
+          m_MethodName: TestPhantomHead
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - keyword: TestPatientCT
+    response:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 891080480}
+          m_MethodName: TestCT
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - keyword: TestPatient
+    response:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 891080480}
+          m_MethodName: TestMRI
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -2322,6 +2433,12 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &768536057 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4576017457701428021, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
+    type: 3}
+  m_PrefabInstance: {fileID: 27228176}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &891080479
 GameObject:
   m_ObjectHideFlags: 0
@@ -2356,8 +2473,11 @@ MonoBehaviour:
   depthSensorMode: 1
   enablePointCloud: 1
   ClippingSphere: {fileID: 913041437}
-  HeadObject: {fileID: 969942824}
+  SourceContainer: {fileID: 969942824}
   depthPreviewPlane: {fileID: 456786859}
+  phantomHead: {fileID: 768536057}
+  patientMRI: {fileID: 27228177}
+  patientCT: {fileID: 978796275}
   shortAbImagePreviewPlane: {fileID: 349520856}
   longDepthPreviewPlane: {fileID: 891683166}
   longAbImagePreviewPlane: {fileID: 119160456}
@@ -2395,7 +2515,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06473f65f83aaa845b717448f572d7a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hostIPAddress: 10.5.87.195
+  hostIPAddress: 192.168.1.4
   port: 9090
   ConnectionStatusLED: {fileID: 1648274831}
   updatedTransformation: 1
@@ -3201,6 +3321,12 @@ BoxCollider:
 --- !u!4 &969942829 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5331104321312746734, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
+    type: 3}
+  m_PrefabInstance: {fileID: 27228176}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &978796275 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2164398589707351144, guid: e6fbe0a10de20da49bf4ccf90ab472fe,
     type: 3}
   m_PrefabInstance: {fileID: 27228176}
   m_PrefabAsset: {fileID: 0}

@@ -144,8 +144,6 @@ public class TCPClient : MonoBehaviour
             Debug.Log(webErrorStatus.ToString() != "Unknown" ? webErrorStatus.ToString() : ex.Message);
         }
         lastMessageSent = true;
-
-
     }
 
 

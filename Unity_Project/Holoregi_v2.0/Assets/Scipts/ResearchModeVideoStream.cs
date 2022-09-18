@@ -23,7 +23,7 @@ public class ResearchModeVideoStream : MonoBehaviour
     [SerializeField] DepthSensorMode depthSensorMode = DepthSensorMode.ShortThrow;
     [SerializeField] bool enablePointCloud = true;
     [SerializeField] GameObject ClippingSphere;
-    [SerializeField] GameObject HeadObject;
+    [SerializeField] GameObject SourceContainer;
     private float[] transformationMatrix = new float[] { };
 
     TCPClient tcpClient;
@@ -32,6 +32,9 @@ public class ResearchModeVideoStream : MonoBehaviour
     private Material depthMediaMaterial = null;
     private Texture2D depthMediaTexture = null;
     private byte[] depthFrameData = null;
+    public GameObject phantomHead;
+    public GameObject patientMRI;
+    public GameObject patientCT;
 
     public GameObject shortAbImagePreviewPlane = null;
     private Material shortAbImageMediaMaterial = null;
@@ -176,6 +179,7 @@ public class ResearchModeVideoStream : MonoBehaviour
         //0,0,0,1};
         //UpdateHeadTransformation();
 
+
 #if ENABLE_WINMD_SUPPORT
         researchMode = new HL2ResearchMode();
 
@@ -195,17 +199,19 @@ public class ResearchModeVideoStream : MonoBehaviour
 
         researchMode.StartSpatialCamerasFrontLoop();
 #endif
+        TestPhantomHead();
     }
 
     bool startRealtimePreview = true;
     void LateUpdate()
     {
-
+        ResetRegistration(); 
+                
 #if ENABLE_WINMD_SUPPORT
         serverFeedbackText.text=tcpClient.getServerFeedback();
-        //HeadObject.transform.localScale=new Vector3(1f,1f,1f);
-        //serverFeedbackText.text=HeadObject.transform.localToWorldMatrix.ToString();
-        //HeadObject.transform.localScale=new Vector3(0.001f,0.001f,0.001f);
+        //SourceContainer.transform.localScale=new Vector3(1f,1f,1f);
+        //serverFeedbackText.text=SourceContainer.transform.localToWorldMatrix.ToString();
+        //SourceContainer.transform.localScale=new Vector3(0.001f,0.001f,0.001f);
         if (tcpClient.updatedTransformation)
         {
 
@@ -292,19 +298,19 @@ public class ResearchModeVideoStream : MonoBehaviour
         {
             transformationMatrix4x4[i] = transformationMatrixInUnity[i];
         }
-        HeadObject.transform.position = regPosition;
-        HeadObject.transform.rotation = transformationMatrix4x4.rotation;
+        SourceContainer.transform.position = regPosition;
+        SourceContainer.transform.rotation = transformationMatrix4x4.rotation;
     }
     public void RequestData()
     {
 #if WINDOWS_UWP
         long timestamp = GetCurrentTimestampUnix();
         if (tcpClient != null)
-        {   HeadObject.transform.localScale=new Vector3(1f,1f,1f);
+        {   SourceContainer.transform.localScale=new Vector3(1f,1f,1f);
             
     
-            Matrix4x4 transformationMatrix4x4 =  HeadObject.transform.localToWorldMatrix;
-            HeadObject.transform.localScale=new Vector3(0.001f,0.001f,0.001f);
+            Matrix4x4 transformationMatrix4x4 =  SourceContainer.transform.localToWorldMatrix;
+            SourceContainer.transform.localScale=new Vector3(0.001f,0.001f,0.001f);
             float[] transformationMatrix=new float[16];
             for (int i=0;i<16;i++)
             {
@@ -326,6 +332,32 @@ public class ResearchModeVideoStream : MonoBehaviour
             posxyz[3 * i + 2] = points[i].z;
         }
         return posxyz;
+    }
+    public void TestPhantomHead()
+    {
+        phantomHead.SetActive(true);
+        patientCT.SetActive(false);
+        patientMRI.SetActive(false);
+        ResetRegistration();
+    }
+    public void TestCT()
+    {
+        phantomHead.SetActive(false);
+        patientCT.SetActive(true);
+        patientMRI.SetActive(false);
+        ResetRegistration();
+    }
+    public void TestMRI()
+    {
+        phantomHead.SetActive(false);
+        patientCT.SetActive(false);
+        patientMRI.SetActive(true);
+        ResetRegistration();
+    }
+    private void ResetRegistration()
+    {
+        SourceContainer.transform.position=new Vector3(0,0,0);
+        SourceContainer.transform.localRotation=Quaternion.identity;
     }
 
     #region Button Event Functions
