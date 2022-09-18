@@ -205,8 +205,7 @@ public class ResearchModeVideoStream : MonoBehaviour
     bool startRealtimePreview = true;
     void LateUpdate()
     {
-        ResetRegistration(); 
-                
+
 #if ENABLE_WINMD_SUPPORT
         serverFeedbackText.text=tcpClient.getServerFeedback();
         //SourceContainer.transform.localScale=new Vector3(1f,1f,1f);
@@ -338,6 +337,7 @@ public class ResearchModeVideoStream : MonoBehaviour
         phantomHead.SetActive(true);
         patientCT.SetActive(false);
         patientMRI.SetActive(false);
+        tcpClient.SendMessage("tPhantomHead");
         ResetRegistration();
     }
     public void TestCT()
@@ -345,6 +345,7 @@ public class ResearchModeVideoStream : MonoBehaviour
         phantomHead.SetActive(false);
         patientCT.SetActive(true);
         patientMRI.SetActive(false);
+        tcpClient.SendMessage("tPatientCT");
         ResetRegistration();
     }
     public void TestMRI()
@@ -352,6 +353,7 @@ public class ResearchModeVideoStream : MonoBehaviour
         phantomHead.SetActive(false);
         patientCT.SetActive(false);
         patientMRI.SetActive(true);
+        tcpClient.SendMessage("tPatientMRI");
         ResetRegistration();
     }
     private void ResetRegistration()

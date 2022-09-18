@@ -173,6 +173,27 @@ public class TCPClient : MonoBehaviour
         lastMessageSent = true;
     }
 
+    public async void SendMessage(String message)
+    {
+        if (!lastMessageSent) return;
+        lastMessageSent = false;
+        try
+        {
+            // Write header
+            dw.WriteString(message);
+
+            // Send out
+            await dw.StoreAsync();
+            await dw.FlushAsync();
+        }
+        catch (Exception ex)
+        {
+            SocketErrorStatus webErrorStatus = SocketError.GetStatus(ex.GetBaseException().HResult);
+            Debug.Log(webErrorStatus.ToString() != "Unknown" ? webErrorStatus.ToString() : ex.Message);
+        }
+        lastMessageSent = true;
+    }
+
     public async void SendUINT16Async(ushort[] data1, ushort[] data2)
     {
         if (!lastMessageSent) return;

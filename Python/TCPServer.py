@@ -12,20 +12,30 @@ from preprocess import reconstruct_pcd, downsample_denoise, mesh_to_pcd_downsamp
 from registration import registration
 import shutil
 import copy
+import datetime
 
-real_patient=False
+sourceType="PhantomHead"
+entrance=1
+
+def initCaptureFolder(saveFolder):
+    now=datetime.datetime.now().strftime("_%m_%d_%Y_%H_%M_%S")
+    if not os.path.isdir(saveFolder):
+        os.mkdir(saveFolder)
+    else:
+        os.rename(saveFolder,saveFolder+now)
+        os.mkdir(saveFolder)
+        shutil.rmtree(saveFolder)
+        os.mkdir(saveFolder)
+
 
 def tcp_server():
-    serverHost = '10.5.87.195' # localhost, find the ip of your *computer*
-    # serverHost = '192.168.43.8'
+    global sourceType
+    # serverHost = '10.5.87.195' # localhost, find the ip of your *computer*
+    # serverHost = '192.168.1.4' #home
+    serverHost = '192.168.1.10' # gf
     serverPort = 9090
-    save_folder = './data/PointCloudCapture'
-
-    if not os.path.isdir(save_folder):
-        os.mkdir(save_folder)
-    else:
-        shutil.rmtree(save_folder)
-        os.mkdir(save_folder)
+    saveFolder = './data/PointCloudCapture'
+    initCaptureFolder(saveFolder)
 
 
     # Create a socket
@@ -74,6 +84,10 @@ def tcp_server():
                 print(filename)
                 np.save(filename, pointcloud_np, allow_pickle=True, fix_imports=True)
 
+            if header=="t":
+                sourceType=data[1:].decode('utf-8')
+                initCaptureFolder(saveFolder)
+                print(f"current source type: {sourceType}")
                 
             if header == 'r':
                 pcd_coord = getCoordinate()
@@ -83,18 +97,21 @@ def tcp_server():
                 T_O3D=convertTransformationToOpen3d(T_Unity)
                 print(f"T of MRI:\n {T_O3D}")
                 # assume the mri mesh is in this folder with this name
-                # path = "./realPatient.stl"
-                if real_patient==False:
-                    path = "./mri.stl"
+                # sourcePath = "./realPatient.stl"
+                if sourceType == "PhantomHead":
+                    sourcePath = "./phantomHead.stl"
+                elif sourceType == "PatientCT":
+                    sourcePath = "./patientCT.stl"
                 else:
-                    path="./realPatient.stl"
+                    sourcePath = "./patientMRI.stl"
+
                 # stitch all pieces
                 scan = reconstruct_pcd()
                 # downsample/denoise
                 scan = downsample_denoise(scan)
                 # o3d.visualization.draw_geometries([scan,pcd_coord])
                 # mri mesh to pcd (downsample)
-                mri = mesh_to_pcd_downsample_mri(path)
+                mri = mesh_to_pcd_downsample_mri(sourcePath)
                 # T_O3D=np.asarray([
                 #     -1,0,0,0,
                 #     0,1,0,0,
@@ -106,8 +123,10 @@ def tcp_server():
                 # # registration
                 transformationMatrix = registration(mri, scan)
                 # draw_registration_result(mri, scan, transformationMatrix)
-                #
+
+
                 print(transformationMatrix)
+                # draw_registration_result(mri, scan, transformationMatrix)
                 conn.send(transformationMatrix.reshape(-1).astype(np.float32).tobytes())
                 # print(f"sent data:\n {transformationMatrix}")
                 draw_registration_result(mri, scan, transformationMatrix)
@@ -209,18 +228,20 @@ def getCoordinate():
     return pcd
 
 if __name__ == "__main__":
-    entrance=1
     if entrance==1:
         tcp_server()
     elif entrance==2:
 
         pcd_coord=getCoordinate()
+
         # o3d.visualization.draw_geometries([pcd_coord])
         # path = "./realPatient.stl"
-        if real_patient == False:
-            path = "./mri.stl"
+        if sourceType == "PhantomHead":
+            sourcePath = "./phantomHead.stl"
+        elif sourceType == "PatientCT":
+            sourcePath = "./patientCT.stl"
         else:
-            path = "./realPatient.stl"
+            sourcePath = "./patientMRI.stl"
         # stitch all pieces
         scan = reconstruct_pcd()
         # downsample/denoise
@@ -228,15 +249,7 @@ if __name__ == "__main__":
         o3d.io.write_point_cloud("reconstruction of phantom head.pcd", scan)
         # mri mesh to pcd (downsample)
         o3d.visualization.draw_geometries([scan,pcd_coord])
-        mri = mesh_to_pcd_downsample_mri(path)
-        print(f"Objects center: {mri.get_center()}")
-        # T_O3D = np.asarray([
-        #     -1, 0, 0, 0,
-        #     0, 1, 0, 0,
-        #     0, 0, 1, 0,
-        #     0, 0, 0, 1
-        # ]).reshape(4, 4)
-        # mri = mri.transform(T_O3D)
+        mri = mesh_to_pcd_downsample_mri(sourcePath)
         o3d.visualization.draw_geometries([mri, pcd_coord, scan])
         # mri = mri.transform(np.asarray([
         #     0, 0, 1, 0,
