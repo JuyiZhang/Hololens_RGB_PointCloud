@@ -32,7 +32,7 @@ def downsample_denoise(pcd):
     # pcd.points = o3d.utility.Vector3dVector(np.asarray(pcd.points)[downsampled_pts,:])
 
     # denoise
-    pcd, _ = pcd.remove_statistical_outlier(nb_neighbors=10, std_ratio=1.5)
+    # pcd, _ = pcd.remove_statistical_outlier(nb_neighbors=10, std_ratio=1.5)
     # pcd, _ = pcd.remove_statistical_outlier(nb_neighbors=10, std_ratio=1.5)
 
     # voxel downsample

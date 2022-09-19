@@ -31,9 +31,9 @@ def initCaptureFolder(saveFolder):
 
 def tcp_server():
     global sourceType
-    # serverHost = '10.5.87.195' # localhost, find the ip of your *computer*
+    serverHost = '10.129.243.74' # localhost, find the ip of your *computer*
     # serverHost = '192.168.1.4' #home
-    serverHost = '192.168.1.10' # gf
+    # serverHost = '192.168.1.10' # gf
     serverPort = 9090
     saveFolder = './data/PointCloudCapture'
     initCaptureFolder(saveFolder)

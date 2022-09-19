@@ -37,6 +37,8 @@ def execute_fast_global_registration(source_down, target_down, source_fpfh,
         distance_threshold,
         o3d.pipelines.registration.TransformationEstimationPointToPoint(False),
         3, [
+            # o3d.pipelines.registration.CorrespondenceCheckerBasedOnNormal(
+            #     3.1415926/180.0*50.0),
             o3d.pipelines.registration.CorrespondenceCheckerBasedOnEdgeLength(
                 0.9),
             o3d.pipelines.registration.CorrespondenceCheckerBasedOnDistance(
