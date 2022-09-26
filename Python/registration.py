@@ -2,10 +2,12 @@ import open3d as o3d
 import time
 
 
-def preprocess_point_cloud(pcd, voxel_size):
+def preprocess_point_cloud(pcd, voxel_size,reorientNormal=False):
     radius_normal = voxel_size * 2
     pcd.estimate_normals(
         o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=30))
+    if reorientNormal==True:
+        o3d.geometry.PointCloud.orient_normals_towards_camera_location(pcd)
 
     radius_feature = voxel_size * 5
 
@@ -24,7 +26,7 @@ def prepare_dataset(voxel_size, source, target):
     target.estimate_normals()
 
     source_down, source_fpfh = preprocess_point_cloud(source, voxel_size)
-    target_down, target_fpfh = preprocess_point_cloud(target, voxel_size)
+    target_down, target_fpfh = preprocess_point_cloud(target, voxel_size,reorientNormal=True)
     return source, target, source_down, target_down, source_fpfh, target_fpfh
 
 
@@ -37,8 +39,8 @@ def execute_fast_global_registration(source_down, target_down, source_fpfh,
         distance_threshold,
         o3d.pipelines.registration.TransformationEstimationPointToPoint(False),
         3, [
-            # o3d.pipelines.registration.CorrespondenceCheckerBasedOnNormal(
-            #     3.1415926/180.0*50.0),
+            o3d.pipelines.registration.CorrespondenceCheckerBasedOnNormal(
+                3.1415926/180.0*10.0),
             o3d.pipelines.registration.CorrespondenceCheckerBasedOnEdgeLength(
                 0.9),
             o3d.pipelines.registration.CorrespondenceCheckerBasedOnDistance(

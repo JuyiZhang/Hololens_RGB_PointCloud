@@ -14,9 +14,9 @@ import shutil
 import copy
 import datetime
 
-sourceType="PhantomHead"
-# sourceType="PatientMRI"
-entrance=1
+# sourceType="PhantomHead"
+sourceType="PatientMRI"
+entrance=2
 
 def initCaptureFolder(saveFolder):
     now=datetime.datetime.now().strftime("_%m_%d_%Y_%H_%M_%S")
@@ -251,10 +251,18 @@ if __name__ == "__main__":
         scan = reconstruct_pcd()
         # downsample/denoise
         scan = downsample_denoise(scan)
+
+        radius_normal = 0.005 * 2
+        scan.estimate_normals(
+            o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=30))
+        # o3d.geometry.PointCloud.orient_normals_towards_camera_location(scan)
+
         o3d.io.write_point_cloud("reconstruction of phantom head.pcd", scan)
         # mri mesh to pcd (downsample)
-        # o3d.visualization.draw_geometries([scan,pcd_coord])
+        o3d.visualization.draw_geometries([scan])
         mri = mesh_to_pcd_downsample_mri(sourcePath)
+        # o3d.geometry.PointCloud.orient_normals_towards_camera_location(mri)
+        o3d.visualization.draw_geometries([mri])
         o3d.visualization.draw_geometries([mri, pcd_coord, scan])
         # mri = mri.transform(np.asarray([
         #     0, 0, 1, 0,
