@@ -1,3 +1,9 @@
+###############################
+# This is the server code
+# To run the server, configure the IP address
+# run the server first, the hololens client will connect to the server automatically once start
+# the server do 2 things: listen to request from client and send back respond, such as registration result etc.
+
 from logging import exception
 import socket
 import struct
@@ -14,10 +20,20 @@ import shutil
 import copy
 import datetime
 
+
 # sourceType="PhantomHead"
 sourceType="PatientMRI"
-entrance=2
+serverHost = '10.129.243.74'  # localhost, find the ip of your *computer*
+serverPort = 9090
+entrance=2 # 1: normal running with realtime data, 2: testing with recorded data, check the main() function
 
+
+# param:
+#       saveFolder: directory to save received point clouds
+# description:
+#       for each testing, the point cloud folder should be empty
+#       if the target folder does not exist, create one
+#       otherwise, rename the existing folder to avoid data over-written
 def initCaptureFolder(saveFolder):
     now=datetime.datetime.now().strftime("_%m_%d_%Y_%H_%M_%S")
     if not os.path.isdir(saveFolder):
@@ -30,11 +46,7 @@ def initCaptureFolder(saveFolder):
 
 
 def tcp_server():
-    global sourceType
-    serverHost = '10.129.243.74' # localhost, find the ip of your *computer*
-    # serverHost = '192.168.1.4' #home
-    # serverHost = '192.168.1.10' # gf
-    serverPort = 9090
+    global sourceType, serverHost, serverPort
     saveFolder = './data/PointCloudCapture'
     initCaptureFolder(saveFolder)
 
@@ -70,6 +82,10 @@ def tcp_server():
             data = conn.recv(1024*1024*4+100)
             if len(data)==0:
                 continue
+            # we define headers:
+            #                       p: received a point cloud frame from Hololens2, save it to our saveFolder
+            #                       t: Hololens2 request to change source type, we support 3 types {PhantomHead, PatientMRI, PatientCT}
+            #                       r: received a request to start registration process, and send back result transformation matrix
             header = data[0:1].decode('utf-8')
             print('--------------------------\nHeader: ' + header)
             print(len(data))
@@ -91,14 +107,16 @@ def tcp_server():
                 print(f"current source type: {sourceType}")
                 
             if header == 'r':
-                pcd_coord = getCoordinate()
+                print('received an request')
 
-                print('receive an request')
-                T_Unity = np.frombuffer(data[1:(1+4*16)], np.float32).reshape((4, 4))
-                T_O3D=convertTransformationToOpen3d(T_Unity)
-                print(f"T of MRI:\n {T_O3D}")
+                # the current transformation of the source .stl mesh
+                T_source_Unity = np.frombuffer(data[1:(1+4*16)], np.float32).reshape((4, 4))
+                T_source_O3D=convertTransformationToOpen3d(T_source_Unity)
+                print(f"T of MRI:\n {T_source_O3D}")
                 # assume the mri mesh is in this folder with this name
                 # sourcePath = "./realPatient.stl"
+
+                # choose the correct sourcePath
                 print(f"source type: {sourceType}")
                 if sourceType == "PhantomHead":
                     sourcePath = "./phantomHeadCrop.stl"
@@ -107,47 +125,35 @@ def tcp_server():
                 else:
                     sourcePath = "./patientMRICrop.stl"
 
-                # stitch all pieces
+                # reconstruct the patient's head using all scanned frames
                 scan = reconstruct_pcd()
+
                 # downsample/denoise
                 scan = downsample_denoise(scan)
+
+                # visualization for debug purpose
+                # pcd_coord = getCoordinate()
                 # o3d.visualization.draw_geometries([scan,pcd_coord])
+
+
                 # mri mesh to pcd (downsample)
                 mri = mesh_to_pcd_downsample_mri(sourcePath)
-                # T_O3D=np.asarray([
-                #     -1,0,0,0,
-                #     0,1,0,0,
-                #     0,0,1,0,
-                #     0,0,0,1
-                # ]).reshape(4,4)
-                # mri=mri.transform(T_O3D)
+
+                # visualization for debug purpose
                 # o3d.visualization.draw_geometries([mri,pcd_coord,scan])
-                # # registration
+
+                # registration
                 transformationMatrix = registration(mri, scan)
                 # draw_registration_result(mri, scan, transformationMatrix)
 
 
-                print(transformationMatrix)
-                # draw_registration_result(mri, scan, transformationMatrix)
+                print(f"result transformation matrix:\n {transformationMatrix}")
+
+                # flatten the matrix and convert to bytes before sending
                 conn.send(transformationMatrix.reshape(-1).astype(np.float32).tobytes())
                 # print(f"sent data:\n {transformationMatrix}")
                 draw_registration_result(mri, scan, transformationMatrix)
 
-                
-            # if header == "i":
-            #     # save RGB Image
-            #     print("Saving RGB Image")
-            #     timestamp = struct.unpack(">q", data[1:9])[0]
-            #     N_image = struct.unpack(">q", data[9:17])[0]
-            #     print("Length of point cloud:" + str(N_image))
-            #     #image_np = np.frombuffer(data[17:17+N_image*4], np.uint8).reshape((-1,3))
-            #     timestamp = str(int(time.time()*1000))
-            #     filename = "ImageCapture/" + timestamp + "_pc.imgdata"
-            #     f = open(filename, 'wb')
-            #     f.write(data[17:17+N_image*4])
-            #     f.close()
-            #     #print(filename)
-            #     #np.save(filename, image_np, allow_pickle=True, fix_imports=True)
 
         except Exception as excep:
             print(type(excep))
@@ -157,6 +163,11 @@ def tcp_server():
     print('Closing socket...')
     sSock.close()
 
+
+# Unity: +x: right, +y: up, +z: forward
+# Open3d: +x: left, +y:up, +z: forward
+# known: T^r R_lr R_rl
+# computable: T^l=R_lr*T^R*R_lr
 def convertTransformationToOpen3d(matrixInUnity):
     matrixInO3D=np.copy(matrixInUnity)
     matrixInO3D=matrixInO3D.T
@@ -172,6 +183,8 @@ def draw_registration_result(source, target, transformation):
     source_temp.transform(transformation)
     o3d.visualization.draw_geometries([source_temp, target_temp])
 
+
+# just a point cloud of the xyz axes, used for debugging
 def getCoordinate():
     xyz = np.asarray([
         0, 0, 0,
@@ -230,15 +243,16 @@ def getCoordinate():
     return pcd
 
 if __name__ == "__main__":
+    # run normal server
     if entrance==1:
         tcp_server()
+
+    # test on recorded data
     elif entrance==2:
-        # sourceType="PatientMRI"
 
         pcd_coord=getCoordinate()
 
-        # o3d.visualization.draw_geometries([pcd_coord])
-        # path = "./realPatient.stl"
+
         if sourceType == "PhantomHead":
             sourcePath = "./phantomHeadCrop.stl"
         elif sourceType == "PatientCT":
@@ -278,9 +292,7 @@ if __name__ == "__main__":
         print(transformationMatrix)
          # print(f"sent data:\n {transformationMatrix}")
         draw_registration_result(mri, scan, transformationMatrix)
-    else:
-        pcd=o3d.io.read_point_cloud('reconstruction of phantom head.pcd')
-        o3d.visualization.draw_geometries([pcd])
+
 
 
 
