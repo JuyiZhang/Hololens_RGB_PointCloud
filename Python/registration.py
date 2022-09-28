@@ -1,7 +1,7 @@
 import open3d as o3d
 import time
 
-
+# compute geometry features, namely normals, fpfh
 def preprocess_point_cloud(pcd, voxel_size,reorientNormal=False):
     radius_normal = voxel_size * 2
     pcd.estimate_normals(
@@ -20,9 +20,6 @@ def preprocess_point_cloud(pcd, voxel_size,reorientNormal=False):
 
 
 def prepare_dataset(voxel_size, source, target):
-    ## source = mri
-    ## target = scanned
-
     target.estimate_normals()
 
     source_down, source_fpfh = preprocess_point_cloud(source, voxel_size)
@@ -55,15 +52,10 @@ def refine_registration(source, target, source_fpfh, target_fpfh, voxel_size, re
     result = o3d.pipelines.registration.registration_icp(
         source, target, distance_threshold, result_fast.transformation,
         o3d.pipelines.registration.TransformationEstimationPointToPlane())
-    # result = o3d.pipelines.registration.registration_icp(
-    #     source, target, distance_threshold, result.transformation,
-    #     o3d.pipelines.registration.TransformationEstimationPointToPlane())
     return result
 
 
 def registration(source, target):
-    ## source = mri
-    ## target = scanned
     voxel_size = 0.005  # same as preprocess
     source, target, source_down, target_down, source_fpfh, target_fpfh = prepare_dataset(voxel_size, source, target)
     start = time.time()

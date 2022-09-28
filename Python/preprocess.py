@@ -4,9 +4,10 @@ from random import sample
 import os
 
 
-def reconstruct_pcd():
+def reconstruct_pcd(pointCloudFolder):
     # convert npy to pcd
-    path = "./data/PointCloudCapture/"
+    # path = "./data/PointCloudCapture/"
+    path=pointCloudFolder
     pcds = []
     for file in os.listdir(path):
         data = np.load(path + file)
@@ -32,8 +33,8 @@ def downsample_denoise(pcd):
     # pcd.points = o3d.utility.Vector3dVector(np.asarray(pcd.points)[downsampled_pts,:])
 
     # denoise
-    # pcd, _ = pcd.remove_statistical_outlier(nb_neighbors=10, std_ratio=1.5)
-    # pcd, _ = pcd.remove_statistical_outlier(nb_neighbors=10, std_ratio=1.5)
+    pcd, _ = pcd.remove_statistical_outlier(nb_neighbors=10, std_ratio=1.5)
+    pcd, _ = pcd.remove_statistical_outlier(nb_neighbors=10, std_ratio=1.5)
 
     # voxel downsample
     pcd = pcd.voxel_down_sample(voxel_size=0.005)

@@ -22,11 +22,11 @@ import datetime
 
 
 # sourceType="PhantomHead"
-sourceType="PatientMRI"
+sourceType="PatientMRI" # { PatientMRI, PatientCT, PhantomHead}
 serverHost = '10.129.243.74'  # localhost, find the ip of your *computer*
 serverPort = 9090
 entrance=2 # 1: normal running with realtime data, 2: testing with recorded data, check the main() function
-
+saveFolder = './data/PointCloudCapture/'
 
 # param:
 #       saveFolder: directory to save received point clouds
@@ -39,15 +39,14 @@ def initCaptureFolder(saveFolder):
     if not os.path.isdir(saveFolder):
         os.mkdir(saveFolder)
     else:
-        os.rename(saveFolder,saveFolder+f"_{sourceType}_"+now)
+        os.rename(saveFolder,saveFolder[:-1]+f"_{sourceType}_"+now)
         os.mkdir(saveFolder)
         shutil.rmtree(saveFolder)
         os.mkdir(saveFolder)
 
 
 def tcp_server():
-    global sourceType, serverHost, serverPort
-    saveFolder = './data/PointCloudCapture'
+    global sourceType, serverHost, serverPort,saveFolder
     initCaptureFolder(saveFolder)
 
 
@@ -97,7 +96,7 @@ def tcp_server():
                 print("Length of point cloud:" + str(N_pointcloud))
                 pointcloud_np = np.frombuffer(data[17:17+N_pointcloud*4], np.float32).reshape((-1,3))
                 timestamp = str(int(time.time()*1000))
-                filename = "./data/PointCloudCapture/" + timestamp + "_pc.ndarray"
+                filename = saveFolder + timestamp + "_pc.ndarray"
                 print(filename)
                 np.save(filename, pointcloud_np, allow_pickle=True, fix_imports=True)
 
@@ -126,7 +125,7 @@ def tcp_server():
                     sourcePath = "./patientMRICrop.stl"
 
                 # reconstruct the patient's head using all scanned frames
-                scan = reconstruct_pcd()
+                scan = reconstruct_pcd(saveFolder)
 
                 # downsample/denoise
                 scan = downsample_denoise(scan)
@@ -249,6 +248,8 @@ if __name__ == "__main__":
 
     # test on recorded data
     elif entrance==2:
+        saveFolder = './data/PointCloudCapture/'
+
 
         pcd_coord=getCoordinate()
 
@@ -262,7 +263,7 @@ if __name__ == "__main__":
             # sourcePath = "./patientMRI.stl"
             sourcePath = "./patientMRICrop.stl"
         # stitch all pieces
-        scan = reconstruct_pcd()
+        scan = reconstruct_pcd(saveFolder)
         # downsample/denoise
         scan = downsample_denoise(scan)
 
