@@ -22,11 +22,10 @@ Then process those point clouds described in the `python` folder. With the provi
 `python main.py` <br>
 to get the transformed MRI point cloud and combined hologram from the Hololens frames registerd with it. -->
 #### Run The TCP Server
-Simply head to the directory in terminal, type `python3 TCPServer.py` the code will be up and running
-However, in the code there are some settings that you will need to take a look at. Please head to the readme in that folder for more information
+Simply head to the directory `python` in terminal, type `python3 TCPServer.py` the code will be up and running
+However, in the code there are some settings (IP address, path to MRI .stl file, etc.) that you will need to take a look at. Please head to the readme in that folder for more information
 ### Client Side
 #### Compiling and Modifying
-Open the Project in Unity. The build setting should already been up <br>
-The build setting is already setup, after successful build, please copy the package.appxmanifest in root directory to `App/HL2ResearchModeUnitySample` <br>
-For more info, please refer to the Unity Folder of Holoregi <br>
+Open the Project `Unity_Project/Holoregi_v2.0` in Unity. The build setting should already been up <br>
+For more info, please refer to the readme of `Unity_Project/Holoregi_v2.0` <br>
 
