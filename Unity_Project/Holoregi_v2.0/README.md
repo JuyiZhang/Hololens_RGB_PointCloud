@@ -18,7 +18,7 @@ This Unity project shows
 # Build
 1. Open this folder in Unity.
 2. Go to Build Settings, switch target platform to UWP.
-3. In the Project tab, open `Scenes/PointCloudSample.unity`.
+3. In the Project tab, open `Scenes/PointCloudSample.unity`. Modify the host address in `MixedRealityPlayspace/ResearchModeController/TCP Client/Host IP address` to the value in the server python file
 4. Hopefully, there is no error in the console. Go to Build Settings, change Target Device to HoloLens, Architecture to ARM64. Build the Unity project in a new folder (e.g. App folder).
 5. Open `App/HL2ResearchModeUnitySample/Package.appxmanifest` with a text editor. Add `xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"` before the `IgnorableNamespaces` in Package tag (line 2). Add `<rescap:Capability Name="perceptionSensorsExperimental" />` in the Capabilities tag between `<uap2:Capability ... >` and `<DeviceCapability ... >`. This the same as enabling Research Mode on HoloLens 1.
 6. If IMU is used, add `<DeviceCapability Name="backgroundSpatialPerception"/>` to DeviceCapability.
