@@ -14,12 +14,13 @@ Holoregi is the abbreviated version of Hololens Registration, which utilizes the
 - Unity: 2020.3.30f1
 - Additional Package: MRTK 2.8.0, OpenXR 1.3
 ## How to Run
+The whole pipeline consists of two components: 1) Python server and 2) Hololens2 Client. The hololens2 client is responsible to  scan point clouds and visualize medical holograms, such as the surface of a patient's head. The python server is responsible to register existing medical holograms to the scanned point clouds. The two parts communicate via TCP.
 ### Server Side
-#### Registration
+<!-- #### Registration
 Reconstruct RGB point clouds from ImageCapture and PointCloudCapture folders by following the instruction from HoloLens2ForCV: https://github.com/microsoft/HoloLens2ForCV/tree/main/Samples/StreamRecorder <br>
 Then process those point clouds described in the `python` folder. With the provided MRI point cloud file, run <br>
 `python main.py` <br>
-to get the transformed MRI point cloud and combined hologram from the Hololens frames registerd with it.
+to get the transformed MRI point cloud and combined hologram from the Hololens frames registerd with it. -->
 #### Run The TCP Server
 Simply head to the directory in terminal, type `python3 TCPServer.py` the code will be up and running
 However, in the code there are some settings that you will need to take a look at. Please head to the readme in that folder for more information
