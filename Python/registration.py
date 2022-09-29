@@ -51,7 +51,7 @@ def refine_registration(source, target, source_fpfh, target_fpfh, voxel_size, re
     print("   distance threshold %.3f." % distance_threshold)
     result = o3d.pipelines.registration.registration_icp(
         source, target, distance_threshold, result_fast.transformation,
-        o3d.pipelines.registration.TransformationEstimationPointToPlane())
+        o3d.pipelines.registration.TransformationEstimationPointToPoint())
     return result
 
 

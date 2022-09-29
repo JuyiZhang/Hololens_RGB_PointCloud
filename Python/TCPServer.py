@@ -21,9 +21,9 @@ import copy
 import datetime
 
 
-# sourceType="PhantomHead"
-sourceType="PatientMRI" # { PatientMRI, PatientCT, PhantomHead}
-serverHost = '10.129.243.74'  # localhost, find the ip of your *computer*
+sourceType="PhantomHead"
+# sourceType="PatientMRI" # { PatientMRI, PatientCT, PhantomHead}
+serverHost = '10.4.34.240'  # localhost, find the ip of your *computer*
 serverPort = 9090
 entrance=2 # 1: normal running with realtime data, 2: testing with recorded data, check the main() function
 saveFolder = './data/PointCloudCapture/'
@@ -93,7 +93,7 @@ def tcp_server():
                 # save point cloud
                 timestamp = struct.unpack(">q", data[1:9])[0]
                 N_pointcloud = struct.unpack(">q", data[9:17])[0]
-                print("Length of point cloud:" + str(N_pointcloud))
+                print("Length of point cloud:" + str(N_pointcloud/3))
                 pointcloud_np = np.frombuffer(data[17:17+N_pointcloud*4], np.float32).reshape((-1,3))
                 timestamp = str(int(time.time()*1000))
                 filename = saveFolder + timestamp + "_pc.ndarray"
@@ -109,9 +109,9 @@ def tcp_server():
                 print('received an request')
 
                 # the current transformation of the source .stl mesh
-                T_source_Unity = np.frombuffer(data[1:(1+4*16)], np.float32).reshape((4, 4))
-                T_source_O3D=convertTransformationToOpen3d(T_source_Unity)
-                print(f"T of MRI:\n {T_source_O3D}")
+                # T_source_Unity = np.frombuffer(data[1:(1+4*16)], np.float32).reshape((4, 4))
+                # T_source_O3D=convertTransformationToOpen3d(T_source_Unity)
+                # print(f"T of MRI:\n {T_source_O3D}")
                 # assume the mri mesh is in this folder with this name
                 # sourcePath = "./realPatient.stl"
 
@@ -264,6 +264,7 @@ if __name__ == "__main__":
             sourcePath = "./patientMRICrop.stl"
         # stitch all pieces
         scan = reconstruct_pcd(saveFolder)
+        o3d.visualization.draw_geometries([scan])
         # downsample/denoise
         scan = downsample_denoise(scan)
 

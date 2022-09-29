@@ -27,13 +27,12 @@ def downsample_denoise(pcd):
     num_pts = np.asarray(pcd.points).shape[0]
 
     # random downsample
-    downsampled_pts = sample(range(num_pts), int(round(num_pts / 1)))
-    if int(round(num_pts / 50)) < 3000:
-        print("too few points, sample more data")
+    # downsampled_pts = sample(range(num_pts), int(round(num_pts / 1)))
+    # if int(round(num_pts / 50)) < 3000:
+    #     print("too few points, sample more data")
     # pcd.points = o3d.utility.Vector3dVector(np.asarray(pcd.points)[downsampled_pts,:])
 
     # denoise
-    pcd, _ = pcd.remove_statistical_outlier(nb_neighbors=10, std_ratio=1.5)
     pcd, _ = pcd.remove_statistical_outlier(nb_neighbors=10, std_ratio=1.5)
 
     # voxel downsample
@@ -50,8 +49,8 @@ def mesh_to_pcd_downsample_mri(path):
         mesh = mesh.scale(0.001, [0, 0, 0])
     if path == "./patientMRI.stl" or path == "./patientMRICrop.stl" :
         mesh = mesh.scale(1, [0, 0, 0])
-    pcd = mesh.sample_points_uniformly(number_of_points=10000)
-    pcd = pcd.voxel_down_sample(voxel_size=0.005)
+    pcd = mesh.sample_points_uniformly(number_of_points=10000) # mesh -> point cloud
+    pcd = pcd.voxel_down_sample(voxel_size=0.005) # downsample
     # if path == "./realPatient.stl":
     #     pcd=pcd.transform(np.asarray([
     #         1,0,0,0,
